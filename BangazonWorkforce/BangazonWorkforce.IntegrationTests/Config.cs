@@ -6,7 +6,7 @@
         {
             get
             {
-                return "__PLACE CONNECTION STRING HERE__";
+                return "Server=LAPTOP-3OUVH1BN\\SQLEXPRESS;Database=Bangazon;Trusted_Connection=True;";
             }
         }
     }
