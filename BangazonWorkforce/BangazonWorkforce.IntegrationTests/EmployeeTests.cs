@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace BangazonWorkforce.IntegrationTests
 {
@@ -38,6 +39,36 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
+
+        [Fact]
+        public async Task Get_IndexContentVerified()
+        {
+            // Arrange
+            string url = "/employee";
+            Employee fullEmployee = (await GetFullEmployee());
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync(url);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("text/html; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            IHtmlDocument indexPage = await HtmlHelpers.GetDocumentAsync(response);
+
+            Assert.Contains(
+                indexPage.QuerySelectorAll("td"),
+                td => td.TextContent.Contains(fullEmployee.FirstName));
+            Assert.Contains(
+                indexPage.QuerySelectorAll("td"),
+                td => td.TextContent.Contains(fullEmployee.LastName));
+            Assert.Contains(
+                indexPage.QuerySelectorAll("td"),
+                td => td.TextContent.Contains(fullEmployee.Department.Name));
+
+        }
+    
 
 
         [Fact]
@@ -84,15 +115,7 @@ namespace BangazonWorkforce.IntegrationTests
                 lastRow.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(departmentName));
 
-            IHtmlInputElement cb = (IHtmlInputElement)lastRow.QuerySelector("input[type='checkbox']");
-            if (isSupervisor == "true")
-            {
-                Assert.True(cb.IsChecked);
-            }
-            else
-            {
-                Assert.False(cb.IsChecked);
-            } 
+            
         }
 
         [Fact]
@@ -159,11 +182,48 @@ namespace BangazonWorkforce.IntegrationTests
             using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
             {
                 IEnumerable<Employee> allEmployees =
-                    await conn.QueryAsync<Employee>( @"SELECT Id, FirstName, LastName, 
-                                                              IsSupervisor, DepartmentId 
-                                                         FROM Employee
-                                                     ORDER BY Id");
+                    await conn.QueryAsync<Employee>( @"
+                    SELECT
+                        Id,
+                        FirstName,
+                        LastName,
+                        IsSupervisor,
+                        DepartmentId
+                    FROM Employee
+                    ORDER BY Id");
                 return allEmployees.ToList();
+            }
+        }
+
+
+        /* 
+            * Author: Ricky Bruner
+            
+            * Purpose: Grab a Single employee with its department joined to it from the database for the Get_IndexContentVerified test above. 
+        */
+        private async Task<Employee> GetFullEmployee()
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            {
+                string sql = @"
+                    SELECT TOP 1 
+                        e.Id, 
+                        e.FirstName, 
+                        e.LastName, 
+                        e.IsSupervisor, 
+                        e.DepartmentId,
+                        d.Id,
+                        d.Name,
+                        d.Budget
+                    FROM Employee e
+                    JOIN Department d ON d.Id = e.DepartmentId
+                ";
+                IEnumerable<Employee> Employees =
+                    await conn.QueryAsync<Employee, Department, Employee>(sql, (employee, department) => {
+                        employee.Department = department;
+                        return employee;
+                    });
+                return Employees.First();
             }
         }
 
@@ -172,7 +232,12 @@ namespace BangazonWorkforce.IntegrationTests
             using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
             {
                 IEnumerable<Department> allDepartments = 
-                    await conn.QueryAsync<Department>(@"SELECT Id, Name, Budget FROM Department");
+                    await conn.QueryAsync<Department>(@"
+                    SELECT
+                        Id,
+                        Name,
+                        Budget
+                    FROM Department");
                 return allDepartments.ToList();
             }
         }

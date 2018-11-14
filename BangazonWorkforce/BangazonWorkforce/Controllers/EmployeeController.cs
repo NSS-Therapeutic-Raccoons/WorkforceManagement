@@ -8,6 +8,7 @@ using BangazonWorkforce.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Dapper;
+using BangazonWorkforce.Models.ViewModels;
 
 namespace BangazonWorkforce.Controllers
 {
@@ -27,6 +28,13 @@ namespace BangazonWorkforce.Controllers
             _config = config;
         }
 
+        /*
+         
+             * Author: Ricky Bruner
+         
+             * Index calls for all Employees, and retrieves a department for the Employee via a join on DepartmentId. It then feeds these employees into the EmployeeIndexViewModel
+         
+        */
         public async Task<IActionResult> Index()
         {
             using (IDbConnection conn = Connection)
@@ -48,7 +56,9 @@ namespace BangazonWorkforce.Controllers
                         return employee;
                     });
 
-                return View(employees);
+                EmployeeIndexViewModel viewModel = new EmployeeIndexViewModel();
+                viewModel.Employees = employees;
+                return View(viewModel);
             }
         }
 
@@ -68,6 +78,7 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: Employee/Create
+        /*Create makes a list of All the Departments and puts that list of Departments into the ViewModel to be used.*/
         public async Task<IActionResult> Create()
         {
             List<Department> allDepartments = await GetAllDepartments();
@@ -81,6 +92,10 @@ namespace BangazonWorkforce.Controllers
         // POST: Employee/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Create will post a new Employee to the Database through the EmployeeAddEditViewModel.
+        // The EmployeeAddEditViewModel takes an Employee model, List of Department models, and SelectListItems of those Departments.
+        // Db connection is made to Insert the new Employee, Department is selected via SelectListItems using Department and DepartmentId
+        // Page redirect back to Index
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EmployeeAddEditViewModel viewmodel)
@@ -96,12 +111,17 @@ namespace BangazonWorkforce.Controllers
 
             using (IDbConnection conn = Connection)
             {
-                string sql = $@"INSERT INTO Employee (
-                                    FirstName, LastName, IsSupervisor, DepartmentId
-                                ) VALUES (
-                                    '{employee.FirstName}', '{employee.LastName}',
-                                    {(employee.IsSupervisor ? 1 : 0)}, {employee.DepartmentId}
-                                );";
+                string sql = $@"
+                INSERT INTO Employee (
+                    FirstName,
+                    LastName,
+                    IsSupervisor,
+                    DepartmentId)
+                VALUES (
+                    '{employee.FirstName}',
+                    '{employee.LastName}',
+                    {(employee.IsSupervisor ? 1 : 0)},
+                    {employee.DepartmentId});";
 
                 await conn.ExecuteAsync(sql);
                 return RedirectToAction(nameof(Index));
