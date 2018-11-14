@@ -51,7 +51,7 @@ namespace BangazonWorkforce.IntegrationTests
 
             string newFirstName = "FirstName-" + Guid.NewGuid().ToString();
             string newLastName = "LastName-" + Guid.NewGuid().ToString();
-            string isSupervisor = "false";
+            string isSupervisor = "true";
             string departmentId = department.Id.ToString();
             string departmentName = department.Name;
 
