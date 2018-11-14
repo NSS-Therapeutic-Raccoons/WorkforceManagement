@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace BangazonWorkforce.IntegrationTests
 {
@@ -38,6 +39,38 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Equal("text/html; charset=utf-8",
                 response.Content.Headers.ContentType.ToString());
         }
+
+        [Fact]
+        public async Task Get_IndexContentVerified()
+        {
+            // Arrange
+            string url = "/employee";
+            Employee fullEmployee = (await GetFullEmployee());
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync(url);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("text/html; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            IHtmlDocument indexPage = await HtmlHelpers.GetDocumentAsync(response);
+
+
+            Assert.Contains(
+                indexPage.QuerySelectorAll("td"),
+                td => td.TextContent.Contains(fullEmployee.FirstName));
+            Assert.Contains(
+                indexPage.QuerySelectorAll("td"),
+                td => td.TextContent.Contains(fullEmployee.LastName));
+            Assert.Contains(
+                indexPage.QuerySelectorAll("td"),
+                td => td.TextContent.Contains(fullEmployee.Department.Name));
+            
+
+        }
+    
 
 
         [Fact]
@@ -164,6 +197,32 @@ namespace BangazonWorkforce.IntegrationTests
                                                          FROM Employee
                                                      ORDER BY Id");
                 return allEmployees.ToList();
+            }
+        }
+
+        private async Task<Employee> GetFullEmployee()
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            {
+                string sql = @"
+                    SELECT TOP 1 
+                        e.Id, 
+                        e.FirstName, 
+                        e.LastName, 
+                        e.IsSupervisor, 
+                        e.DepartmentId,
+                        d.Id,
+                        d.Name,
+                        d.Budget
+                    FROM Employee e
+                    JOIN Department d ON d.Id = e.DepartmentId
+                ";
+                IEnumerable<Employee> Employees =
+                    await conn.QueryAsync<Employee, Department, Employee>(sql, (employee, department) => {
+                        employee.Department = department;
+                        return employee;
+                    });
+                return Employees.First();
             }
         }
 

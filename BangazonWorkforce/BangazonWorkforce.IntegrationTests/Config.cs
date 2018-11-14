@@ -6,7 +6,7 @@
         {
             get
             {
-                return "__PLACE CONNECTION STRING HERE__";
+                return "server=DESKTOP-F3D43II\\SQLEXPRESS;Initial Catalog=Bangazon;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             }
         }
     }
