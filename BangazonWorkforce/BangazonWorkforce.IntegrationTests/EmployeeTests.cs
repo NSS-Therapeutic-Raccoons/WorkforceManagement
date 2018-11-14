@@ -115,15 +115,7 @@ namespace BangazonWorkforce.IntegrationTests
                 lastRow.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(departmentName));
 
-            IHtmlInputElement cb = (IHtmlInputElement)lastRow.QuerySelector("input[type='checkbox']");
-            if (isSupervisor == "true")
-            {
-                Assert.True(cb.IsChecked);
-            }
-            else
-            {
-                Assert.False(cb.IsChecked);
-            } 
+            
         }
 
         [Fact]
@@ -203,6 +195,12 @@ namespace BangazonWorkforce.IntegrationTests
             }
         }
 
+
+        /* 
+            * Author: Ricky Bruner
+            
+            * Purpose: Grab a Single employee with its department joined to it from the database for the Get_IndexContentVerified test above. 
+        */
         private async Task<Employee> GetFullEmployee()
         {
             using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
