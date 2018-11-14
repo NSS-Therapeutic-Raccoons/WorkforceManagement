@@ -6,7 +6,7 @@
         {
             get
             {
-                return "__PLACE CONNECTION STRING HERE__";
+                return "Data Source = DESKTOP - O3UR0QP\\SQLEXPRESS; Initial Catalog = Bangazon; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
             }
         }
     }

@@ -18,7 +18,7 @@ namespace BangazonWorkforce.IntegrationTests
         {
             _client = factory.CreateClient();
         }
-
+        
         [Fact]
         public async Task Get_IndexReturnsSuccessAndCorrectContentType()
         {
@@ -66,6 +66,12 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Contains(
                 indexPage.QuerySelectorAll("td"), 
                 td => td.TextContent.Contains(newDepartmentBudget));
+            Assert.Contains(
+                createPage.QuerySelectorAll("Input"),
+                i => i.Id == "Name");
+            Assert.Contains(
+               createPage.QuerySelectorAll("Input"),
+               i => i.Id == "Budget");
         }
     }
 }
