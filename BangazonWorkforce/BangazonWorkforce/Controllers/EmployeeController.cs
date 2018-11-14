@@ -210,7 +210,8 @@ namespace BangazonWorkforce.Controllers
                                        d.Id,
                                        d.Name,
                                        d.Budget
-                                  FROM Employee e JOIN Department d on e.DepartmentId = d.Id
+                                  FROM Employee e 
+                                  JOIN Department d on e.DepartmentId = d.Id
                                  WHERE e.id = {id}";
                 IEnumerable<Employee> employees = await conn.QueryAsync<Employee, Department, Employee>(
                     sql,
