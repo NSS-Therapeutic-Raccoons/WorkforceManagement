@@ -57,7 +57,6 @@ namespace BangazonWorkforce.IntegrationTests
 
             IHtmlDocument indexPage = await HtmlHelpers.GetDocumentAsync(response);
 
-
             Assert.Contains(
                 indexPage.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(fullEmployee.FirstName));
@@ -67,7 +66,6 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Contains(
                 indexPage.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(fullEmployee.Department.Name));
-            
 
         }
     
