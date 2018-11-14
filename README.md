@@ -163,8 +163,3 @@ and that the `csproj` file inside of `BangazonWorkforce.IntegrationTests` look l
 ## Acknowledgments
 
 * Special thanks to **Andy Collins** - [askingalot](https://github.com/askingalot) for being Andy Collins.
-
-## Notes
-
-* Here is the ERD for our project.
-![Bangazon ERD](https://github.com/NSS-Therapeutic-Raccoons/BangazonAPI/blob/master/BangazonAPI-ERD.png?raw=true)
