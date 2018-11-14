@@ -26,7 +26,7 @@ A step by step series of examples that tell you how to get a development env run
 
 2. Download or Clone the Repo to your local machine.
 
-3. Create a `Bangazon.db` file in the project.
+3. Open SSMS and create a new database called `Bangazon.db`
 
 4. Open Visual Studio, go to `File => Open => Project/Solution...` and open the `WorkForceManagement/BangazonWorkForce.sln` file.
 
