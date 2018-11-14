@@ -10,22 +10,22 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.FirstName)
+            @Html.DisplayNameFor(model => model.Employee.FirstName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FirstName)
+            @Html.DisplayFor(model => model.Employee.FirstName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.LastName)
+            @Html.DisplayNameFor(model => model.Employee.LastName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.LastName)
+            @Html.DisplayFor(model => model.Employee.LastName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.IsSupervisor)
+            @Html.DisplayNameFor(model => model.Employee.IsSupervisor)
         </dt>
         <dd>
-            @if (Model.IsSupervisor)
+            @if (Model.Employee.IsSupervisor)
             {
                 <span>Yes</span>
             }
@@ -35,17 +35,23 @@
             }
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.DepartmentId)
+            @Html.DisplayNameFor(model => model.Employee.Department)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Department.Name)
+            @Html.DisplayFor(model => model.Employee.Department.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TrainingPrograms)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TrainingPrograms)
         </dd>
         <dd>
-            @if (Model.AllTrainingPrograms. == Model.Employee.Id)
+            @Html.DisplayFor(model => model.Department.Name)
         </dd>
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Employee.Id }) |
     <a asp-action="Index">Back to List</a>
 </div>

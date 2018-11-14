@@ -58,14 +58,14 @@ namespace BangazonWorkforce.Controllers
             {
                 return NotFound();
             }
-
-            Employee employee = await GetById(id.Value);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-            return View(employee);
-        }
+                Employee employee = await GetById(id.Value);
+                EmployeeDetailModel viewmodel = new EmployeeDetailModel(_config,employee.Id, employee);
+                if (employee == null)
+                {
+                    return NotFound();
+                }
+                return View(viewmodel); 
+            } 
 
         // GET: Employee/Create
         public async Task<IActionResult> Create()
