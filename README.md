@@ -43,8 +43,23 @@ A step by step series of examples that tell you how to get a development env run
 ```
  Here is a gif visualizing this process:
 
-
 ![Appsettings Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/readmegifs/appsettingsjson.gif?raw=true)
+
+7. Next, open the SQL Server Object Explorer view window. Navigate to the Bangazon server and right click to select **properties**. In the properties window that pops up, find ***Connection String*** and copy the connection string.
+8. Paste the connection string into the appsettings.json file you just created under connection strings/defaultconnection. Here:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "---->PASTE HERE<----"
+  },
+  ...
+}
+```
+9. Change "data source" to "server" in the connection string.
+
+Here is another handy gif showing this continued process:
+
+![Connection String Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/readmegifs/connectionstring.gif?raw=true)
 
 3. Open SSMS and run the SQL scrip in the repo, [SQL Script](https://github.com/NSS-Therapeutic-Raccoons/BangazonAPI/blob/master/SQL/Bangazon.sql), then execute the script into a local database.
 * Open the project in Visual Studio, look for SQL Server Object Explorer and navigate to your local database. Right click on the name and click on properties. Look for "Connection String" and copy the value to the right of it.
