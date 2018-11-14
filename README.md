@@ -26,9 +26,25 @@ A step by step series of examples that tell you how to get a development env run
 2. Download or Clone the Repo to your local machine.
 3. Create a Bangazon.db file in the project.
 4. Open Visual Studio, go to File => Open => Project/Solution... and open the WorkForceManagement/BangazonWorkForce.sln file.
-5. Open the Solution Explorer View and add a new JSON file, called appsettings.json. View below:
+5. Open the Solution Explorer View and under the BangazonWorkforce project, add a new JSON file, called appsettings.json.
+6. This into the file:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": ""
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
+ Here is a gif visualizing this process:
 
-	-image/gif-
+
+![Appsettings Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/readmegifs/appsettingsjson.gif?raw=true)
 
 3. Open SSMS and run the SQL scrip in the repo, [SQL Script](https://github.com/NSS-Therapeutic-Raccoons/BangazonAPI/blob/master/SQL/Bangazon.sql), then execute the script into a local database.
 * Open the project in Visual Studio, look for SQL Server Object Explorer and navigate to your local database. Right click on the name and click on properties. Look for "Connection String" and copy the value to the right of it.
