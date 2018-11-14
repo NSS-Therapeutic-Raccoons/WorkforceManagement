@@ -52,7 +52,7 @@ A step by step series of examples that tell you how to get a development env run
   "ConnectionStrings": {
     "DefaultConnection": "---->PASTE HERE<----"
   },
-  ...
+  
 }
 ```
 9. Change "data source" to "server" in the connection string.
@@ -60,6 +60,25 @@ A step by step series of examples that tell you how to get a development env run
 Here is another handy gif showing this continued process:
 
 ![Connection String Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/readmegifs/connectionstring.gif?raw=true)
+
+10. Inside of the `BangazonWorkforce.IntegrationTests` project, create a new class file called `Config.cs`. 
+
+11. Inside of `Config.cs`, paste this text:
+```cs
+namespace BangazonWorkforce.IntegrationTests
+{
+    public static class Config
+    {
+        public static string ConnectionSring
+        {
+            get
+            {
+                return "__PLACE CONNECTION STRING HERE__";
+            }
+        }
+    }
+}
+```
 
 3. Open SSMS and run the SQL scrip in the repo, [SQL Script](https://github.com/NSS-Therapeutic-Raccoons/BangazonAPI/blob/master/SQL/Bangazon.sql), then execute the script into a local database.
 * Open the project in Visual Studio, look for SQL Server Object Explorer and navigate to your local database. Right click on the name and click on properties. Look for "Connection String" and copy the value to the right of it.
