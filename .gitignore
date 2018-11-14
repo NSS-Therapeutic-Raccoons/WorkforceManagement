@@ -5,6 +5,7 @@
 
 *.andy.json
 appsettings.*
+Config.cs
 *.suo
 *.user
 *.userosscache

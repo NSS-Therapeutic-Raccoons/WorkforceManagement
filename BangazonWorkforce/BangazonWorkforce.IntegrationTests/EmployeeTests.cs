@@ -159,10 +159,15 @@ namespace BangazonWorkforce.IntegrationTests
             using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
             {
                 IEnumerable<Employee> allEmployees =
-                    await conn.QueryAsync<Employee>( @"SELECT Id, FirstName, LastName, 
-                                                              IsSupervisor, DepartmentId 
-                                                         FROM Employee
-                                                     ORDER BY Id");
+                    await conn.QueryAsync<Employee>( @"
+                    SELECT
+                        Id,
+                        FirstName,
+                        LastName,
+                        IsSupervisor,
+                        DepartmentId
+                    FROM Employee
+                    ORDER BY Id");
                 return allEmployees.ToList();
             }
         }
@@ -172,7 +177,12 @@ namespace BangazonWorkforce.IntegrationTests
             using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
             {
                 IEnumerable<Department> allDepartments = 
-                    await conn.QueryAsync<Department>(@"SELECT Id, Name, Budget FROM Department");
+                    await conn.QueryAsync<Department>(@"
+                    SELECT
+                        Id,
+                        Name,
+                        Budget
+                    FROM Department");
                 return allDepartments.ToList();
             }
         }
