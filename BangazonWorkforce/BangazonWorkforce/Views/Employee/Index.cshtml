@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BangazonWorkforce.Models.Employee>
+﻿@model BangazonWorkforce.Models.ViewModels.EmployeeIndexViewModel
 
 @{
     ViewData["Title"] = "All Employees";
@@ -16,13 +16,13 @@
                 Full Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DepartmentId)
+                Department Name
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Employees) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
