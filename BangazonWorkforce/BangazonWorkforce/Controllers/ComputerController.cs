@@ -1,4 +1,6 @@
-﻿using System;
+﻿//Computer MVC controller which will have basic CRUD functionality and display on HTML
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,13 +30,7 @@ namespace BangazonWorkforce.Controllers
         }
 
 
-        /*
 
-            * Author: Klaus Hardt
-
-            * Index calls for all Computers. 
-
-       */
 
         public async Task<IActionResult> Index()
         {
@@ -84,7 +80,7 @@ namespace BangazonWorkforce.Controllers
             using (IDbConnection conn = Connection)
             {
                 string sql = $@"INSERT INTO Computer (PurchaseDate, DecomissionDate, Manufacturer, Make) 
-                                     VALUES ({computer.PurchaseDate}, {computer.DecomissionDate}, '{computer.Manufacturer}', '{computer.Make}' );";
+                                     VALUES ('{computer.PurchaseDate}', '{computer.DecomissionDate}', '{computer.Manufacturer}', '{computer.Make}' );";
 
                 await conn.ExecuteAsync(sql);
                 return RedirectToAction(nameof(Index));
@@ -127,7 +123,10 @@ namespace BangazonWorkforce.Controllers
             using (IDbConnection conn = Connection)
             {
                 string sql = $@"UPDATE Computer 
-                                   SET Purchasedate = '{computer.PurchaseDate}'
+                                 SET Purchasedate = {computer.PurchaseDate},
+                                 DecomissionDate = {computer.DecomissionDate},
+                                 Manufacturer = '{computer.Manufacturer}',
+                                 Make = '{computer.Make}'
                                        
                                  WHERE id = {id}";
 
@@ -177,7 +176,7 @@ namespace BangazonWorkforce.Controllers
         {
             using (IDbConnection conn = Connection)
             {
-                string sql = $@"SELECT Id, Manufacturer, Make, DecomissionDate
+                string sql = $@"SELECT Id, PurchaseDate, DecomissionDate, Manufacturer, Make 
                                   FROM Computer
                                  WHERE id = {id}";
 

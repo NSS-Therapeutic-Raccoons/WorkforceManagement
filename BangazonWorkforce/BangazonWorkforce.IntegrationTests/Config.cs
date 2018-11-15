@@ -1,5 +1,4 @@
-﻿namespace BangazonWorkforce.IntegrationTests
-{
+﻿
     public static class Config
     {
         public static string ConnectionSring
@@ -10,4 +9,4 @@
             }
         }
     }
-}
+
