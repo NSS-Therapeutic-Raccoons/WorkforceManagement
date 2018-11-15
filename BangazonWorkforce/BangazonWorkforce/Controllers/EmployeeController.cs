@@ -28,10 +28,9 @@ namespace BangazonWorkforce.Controllers
             _config = config;
         }
 
-<<<<<<< HEAD
+
         /*Index calls for all Employees, and make a call to Department by Id to select the Department class
          * and build up the Employee model with the Department model in it.*/
-=======
         /*
          
              * Author: Ricky Bruner
@@ -39,7 +38,7 @@ namespace BangazonWorkforce.Controllers
              * Index calls for all Employees, and retrieves a department for the Employee via a join on DepartmentId. It then feeds these employees into the EmployeeIndexViewModel
          
         */
->>>>>>> master
+
         public async Task<IActionResult> Index()
         {
             using (IDbConnection conn = Connection)

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
+//Added assert for input values of createhtml
 namespace BangazonWorkforce.IntegrationTests
 {
     public class DepartmentTests :

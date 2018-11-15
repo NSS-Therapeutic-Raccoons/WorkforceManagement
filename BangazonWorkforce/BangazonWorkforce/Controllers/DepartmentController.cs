@@ -27,6 +27,15 @@ namespace BangazonWorkforce.Controllers
             _config = config;
         }
 
+
+        /*
+
+            * Author: Klaus Hardt
+
+            * Index calls for all Department including the name and budget. 
+
+       */
+
         public async Task<IActionResult> Index()
         {
             using (IDbConnection conn = Connection)
