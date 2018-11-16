@@ -179,7 +179,7 @@ namespace BangazonWorkforce.IntegrationTests
 
         private async Task<List<Employee>> GetAllEmloyees()
         {
-            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
             {
                 IEnumerable<Employee> allEmployees =
                     await conn.QueryAsync<Employee>( @"
@@ -203,7 +203,7 @@ namespace BangazonWorkforce.IntegrationTests
         */
         private async Task<Employee> GetFullEmployee()
         {
-            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
             {
                 string sql = @"
                     SELECT TOP 1 
@@ -229,7 +229,7 @@ namespace BangazonWorkforce.IntegrationTests
 
         private async Task<List<Department>> GetAllDepartments()
         {
-            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
             {
                 IEnumerable<Department> allDepartments = 
                     await conn.QueryAsync<Department>(@"
@@ -239,7 +239,38 @@ namespace BangazonWorkforce.IntegrationTests
                         Budget
                     FROM Department");
                 return allDepartments.ToList();
-            }
-        }
+            }   
+         }
+
+         [Fact]
+         public async Task Get_EmployeeDetailVerification()
+         {
+         //Arrange
+         string url = "/employee/detail";
+
+
+
+         //Act
+
+         //Assert
+
+
+         }
+
+
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

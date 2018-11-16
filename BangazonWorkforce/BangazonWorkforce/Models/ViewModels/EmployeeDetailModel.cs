@@ -33,8 +33,7 @@ namespace BangazonWorkforce.Models
 
                 IEnumerable<Computer> computers = conn.Query<Computer>($@"
                  SELECT
-				    c.Make,
-                    c.Manufacturer
+				    c.Make
                 FROM Computer c
                 JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
                 JOIN Employee e ON e.Id = ce.EmployeeId
