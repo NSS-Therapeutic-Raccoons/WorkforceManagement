@@ -27,29 +27,16 @@ namespace BangazonWorkforce.Controllers
             _config = config;
         }
 
-<<<<<<< HEAD
-        /*public async Task<IActionResult> Index()
-=======
 
         /*
-
-            * Author: Klaus Hardt
-
+            * Author: Klaus Hardt (Ticket #1)
             * Index calls for all Department including the name and budget. 
 
+            * Author: Daniel Figueroa (Ticket #5)
+            * Comment: Index() now calls on view model 'DepartmentIndexViewModel' to display
+            * department name/budget and Employee count for that department.
        */
 
-        public async Task<IActionResult> Index()
->>>>>>> master
-        {
-            using (IDbConnection conn = Connection)
-            {
-                string sql = "SELECT Id, Name, Budget FROM Department";
-                IEnumerable<Department> departments = await conn.QueryAsync<Department>(sql);
-
-                return View(departments);
-            }
-        }*/
         public async Task<IActionResult> Index()
         {
             using (IDbConnection conn = Connection)
