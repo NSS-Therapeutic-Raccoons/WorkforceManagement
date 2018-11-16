@@ -42,96 +42,99 @@ DROP TABLE IF EXISTS Customer;
 
 
 CREATE TABLE Department (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	[Name] VARCHAR(55) NOT NULL,
-	Budget 	INTEGER NOT NULL
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    [Name] VARCHAR(55) NOT NULL,
+    Budget     INTEGER NOT NULL
 );
 
 CREATE TABLE Employee (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	FirstName VARCHAR(55) NOT NULL,
-	LastName VARCHAR(55) NOT NULL,
-	DepartmentId INTEGER NOT NULL,
-	IsSuperVisor BIT NOT NULL DEFAULT(0),
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    FirstName VARCHAR(55) NOT NULL,
+    LastName VARCHAR(55) NOT NULL,
+    DepartmentId INTEGER NOT NULL,
+    IsSuperVisor BIT NOT NULL DEFAULT(0),
     CONSTRAINT FK_EmployeeDepartment FOREIGN KEY(DepartmentId) REFERENCES Department(Id)
 );
 
 CREATE TABLE Computer (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	PurchaseDate DATETIME NOT NULL,
-	DecomissionDate DATETIME
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    PurchaseDate DATETIME NOT NULL,
+    DecomissionDate DATETIME,
+    Make VARCHAR(55) NOT NULL,
+    Manufacturer VARCHAR(55) NOT NULL
 );
 
 CREATE TABLE ComputerEmployee (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	EmployeeId INTEGER NOT NULL,
-	ComputerId INTEGER NOT NULL,
-	AssignDate DATETIME NOT NULL,
-	UnassignDate DATETIME,
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    EmployeeId INTEGER NOT NULL,
+    ComputerId INTEGER NOT NULL,
+    AssignDate DATETIME NOT NULL,
+    UnassignDate DATETIME,
     CONSTRAINT FK_ComputerEmployee_Employee FOREIGN KEY(EmployeeId) REFERENCES Employee(Id),
     CONSTRAINT FK_ComputerEmployee_Computer FOREIGN KEY(ComputerId) REFERENCES Computer(Id)
 );
 
 
 CREATE TABLE TrainingProgram (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	StartDate DATETIME NOT NULL,
-	EndDate DATETIME NOT NULL,
-	MaxAttendees INTEGER NOT NULL
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    [Name] VARCHAR(255) NOT NULL,
+    StartDate DATETIME NOT NULL,
+    EndDate DATETIME NOT NULL,
+    MaxAttendees INTEGER NOT NULL
 );
 
 CREATE TABLE EmployeeTraining (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	EmployeeId INTEGER NOT NULL,
-	TrainingProgramId INTEGER NOT NULL,
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    EmployeeId INTEGER NOT NULL,
+    TrainingProgramId INTEGER NOT NULL,
     CONSTRAINT FK_EmployeeTraining_Employee FOREIGN KEY(EmployeeId) REFERENCES Employee(Id),
     CONSTRAINT FK_EmployeeTraining_Training FOREIGN KEY(TrainingProgramId) REFERENCES TrainingProgram(Id)
 );
 
 CREATE TABLE ProductType (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	[Name] VARCHAR(55) NOT NULL
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    [Name] VARCHAR(55) NOT NULL
 );
 
 CREATE TABLE Customer (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	FirstName VARCHAR(55) NOT NULL,
-	LastName VARCHAR(55) NOT NULL
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    FirstName VARCHAR(55) NOT NULL,
+    LastName VARCHAR(55) NOT NULL
 );
 
 CREATE TABLE Product (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	ProductTypeId INTEGER NOT NULL,
-	CustomerId INTEGER NOT NULL,
-	Price INTEGER NOT NULL,
-	Title VARCHAR(255) NOT NULL,
-	[Description] VARCHAR(255) NOT NULL,
-	Quantity INTEGER NOT NULL,
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    ProductTypeId INTEGER NOT NULL,
+    CustomerId INTEGER NOT NULL,
+    Price INTEGER NOT NULL,
+    Title VARCHAR(255) NOT NULL,
+    [Description] VARCHAR(255) NOT NULL,
+    Quantity INTEGER NOT NULL,
     CONSTRAINT FK_Product_ProductType FOREIGN KEY(ProductTypeId) REFERENCES ProductType(Id),
     CONSTRAINT FK_Product_Customer FOREIGN KEY(CustomerId) REFERENCES Customer(Id)
 );
 
 
 CREATE TABLE PaymentType (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	AcctNumber INTEGER NOT NULL,
-	[Name] VARCHAR(55) NOT NULL,
-	CustomerId INTEGER NOT NULL,
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    AcctNumber INTEGER NOT NULL,
+    [Name] VARCHAR(55) NOT NULL,
+    CustomerId INTEGER NOT NULL,
     CONSTRAINT FK_PaymentType_Customer FOREIGN KEY(CustomerId) REFERENCES Customer(Id)
 );
 
 CREATE TABLE [Order] (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	CustomerId INTEGER NOT NULL,
-	PaymentTypeId INTEGER,
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    CustomerId INTEGER NOT NULL,
+    PaymentTypeId INTEGER,
     CONSTRAINT FK_Order_Customer FOREIGN KEY(CustomerId) REFERENCES Customer(Id),
     CONSTRAINT FK_Order_Payment FOREIGN KEY(PaymentTypeId) REFERENCES PaymentType(Id)
 );
 
 CREATE TABLE OrderProduct (
-	Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-	OrderId INTEGER NOT NULL,
-	ProductId INTEGER NOT NULL,
+    Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
+    OrderId INTEGER NOT NULL,
+    ProductId INTEGER NOT NULL,
     CONSTRAINT FK_OrderProduct_Product FOREIGN KEY(ProductId) REFERENCES Product(Id),
     CONSTRAINT FK_OrderProduct_Order FOREIGN KEY(OrderId) REFERENCES [Order](Id)
 );
@@ -338,29 +341,29 @@ VALUES
 
 
 INSERT INTO Computer 
-(PurchaseDate, DecomissionDate) 
+(PurchaseDate, DecomissionDate, Make, Manufacturer) 
 VALUES 
-('170421 10:34:09 AM', null);
+('170421 10:34:09 AM', null, 'MacBook Pro', 'Apple');
 
 INSERT INTO Computer 
-(PurchaseDate, DecomissionDate) 
+(PurchaseDate, DecomissionDate, Make, Manufacturer) 
 VALUES 
-('170422 10:34:09 AM', null);
+('170422 10:34:09 AM', null, 'MacBook Air', 'Apple');
 
 INSERT INTO Computer 
-(PurchaseDate, DecomissionDate) 
+(PurchaseDate, DecomissionDate, Make, Manufacturer) 
 VALUES 
-('170423 10:34:09 AM', null);
+('170423 10:34:09 AM', null, 'Nitro 5', 'Acer');
 
 INSERT INTO Computer 
-(PurchaseDate, DecomissionDate)
+(PurchaseDate, DecomissionDate, Make, Manufacturer)
 VALUES 
-('170424 10:34:09 AM', null);
+('170424 10:34:09 AM', null, 'ShitStorm', 'HP');
 
 INSERT INTO Computer 
-(PurchaseDate, DecomissionDate) 
+(PurchaseDate, DecomissionDate, Make, Manufacturer) 
 VALUES 
-('170425 10:34:09 AM', null);
+('170425 10:34:09 AM', null, 'Surface Tablet Pro', 'Microsoft');
 
 
 INSERT INTO ComputerEmployee 
@@ -389,7 +392,7 @@ VALUES
 (5, 1, 2018-10-2);
 
 
-INSERT INTO TrainingProgram 
-(StartDate, EndDate, MaxAttendees) 
-VALUES 
-('170425 10:34:09 AM', '180618 10:34:09 AM', 15);
+INSERT INTO TrainingProgram
+(Name, StartDate, EndDate, MaxAttendees)
+VALUES
+('You Are the First Line of Defence!','170425 10:34:09 AM', '180618 10:34:09 AM', 15);
