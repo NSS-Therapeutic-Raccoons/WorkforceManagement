@@ -6,6 +6,12 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Dapper;
 
+/*
+ Author: Jeremiah Pritchard
+ 
+ Purpose: This is a ViewModel that generates Employee data to be used on the Employee Details View. 
+ */
+
 namespace BangazonWorkforce.Models
 {
     public class EmployeeDetailModel
@@ -54,8 +60,4 @@ namespace BangazonWorkforce.Models
         }
     }
 }
-/*
-Create SQL statement to pull trainingprogram names and add to a new list of strings. 
-I only need the names of the training Programs. I dont need the model of trainingprogram  
-  */
 
