@@ -18,9 +18,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.PurchaseDate)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DecomissionDate)
-            </th>
+           
             <th>
                 @Html.DisplayNameFor(model => model.Manufacturer)
             </th>
@@ -39,9 +37,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.PurchaseDate)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DecomissionDate)
-            </td>
+            
             <td>
                 @Html.DisplayFor(modelItem => item.Manufacturer)
             </td>
@@ -49,9 +45,9 @@
                 @Html.DisplayFor(modelItem => item.Make)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+               
+                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
             </td>
         </tr>
 }

@@ -11,7 +11,6 @@ namespace BangazonWorkforce.Models.ViewModels
          * Purpose: This View Model accepts a list of employees from the database for display on the MVC Index list of employees. It mainly exists for scalability.
          * Author: Ricky Bruner
          * Methods: None. This is a super simple view model.
-         * Yeah it's pretty dumb
     */
     public class EmployeeIndexViewModel
     {

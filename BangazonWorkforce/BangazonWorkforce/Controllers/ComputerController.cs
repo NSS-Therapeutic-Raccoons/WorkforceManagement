@@ -79,8 +79,8 @@ namespace BangazonWorkforce.Controllers
 
             using (IDbConnection conn = Connection)
             {
-                string sql = $@"INSERT INTO Computer (PurchaseDate, DecomissionDate, Manufacturer, Make) 
-                                     VALUES ('{computer.PurchaseDate}', '{computer.DecomissionDate}', '{computer.Manufacturer}', '{computer.Make}' );";
+                string sql = $@"INSERT INTO Computer (PurchaseDate, Manufacturer, Make) 
+                                     VALUES ('{computer.PurchaseDate}', '{computer.Manufacturer}', '{computer.Make}' );";
 
                 await conn.ExecuteAsync(sql);
                 return RedirectToAction(nameof(Index));
@@ -157,18 +157,31 @@ namespace BangazonWorkforce.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            using (IDbConnection conn = Connection)
-            {
-                string sql = $@"DELETE FROM Computer WHERE id = {id}";
-                int rowsDeleted = await conn.ExecuteAsync(sql);
-
-                if (rowsDeleted > 0)
+            
+                using (IDbConnection conn = Connection)
                 {
-                    return NotFound();
-                }
 
-                return RedirectToAction(nameof(Index));
-            }
+                    string sql = $@"DELETE FROM Computer WHERE id = {id}";
+                try {
+                    await conn.ExecuteAsync(sql);
+
+                } catch (SqlException e)
+                {
+                    Console.WriteLine(e);
+                    return RedirectToAction(nameof(Index));
+                 };
+
+                    /*
+                    if (rowsDeleted > 0)
+                    {
+                        return NotFound();
+                    }
+    */
+                    //find id match in computeremployee and if employeeId not NULL present error
+                    //can't delete anyway because get foreign key constraint
+                    return RedirectToAction(nameof(Index));
+                }
+            
         }
 
 
