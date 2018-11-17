@@ -9,9 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Dapper;
 using BangazonWorkforce.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BangazonWorkforce.Controllers
 {
+
+    /*
+        * Author: Theraputic Raccoons 
+        * Purpose: This controller handles the database queries and data filtering into Views for the Index, Details, Create, Edit, Delete paths.
+    */
     public class EmployeeController : Controller
     {
         private IConfiguration _config;
@@ -128,6 +134,10 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To GET all of the neccessary data from the database and render the Edit View to the user. The "computer" logic below accounts for whether or not the specified employee has been assigned a computer.
+        */
         // GET: Employee/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -158,17 +168,24 @@ namespace BangazonWorkforce.Controllers
                 Employee = employee,
                 AllDepartments = allDepartments,
                 AllComputers = allActiveComputers,
-                Computer = computer,
                 EmployeeTrainingPrograms = employeeTrainingPrograms,
                 AllTrainingPrograms = allTrainingPrograms
             };
+            
+            if (computer != null)
+            {
+                viewmodel.Computer = computer;
+            }
 
             return View(viewmodel);
         }
 
+
+        /*
+            * Author: Ricky Bruner 
+            * Purpose: This POST handles all of the data manipulation for receiving the user inputed changes from the user on the Edit View when submit is initiated. It builds various SQL scripts based on what the employee already has assigned, and what the user changes this data to.
+        */
         // POST: Employee/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EmployeeEditViewModel viewmodel)
@@ -187,7 +204,7 @@ namespace BangazonWorkforce.Controllers
 
             Employee employee = viewmodel.Employee;
 
-            List<TrainingProgram> employeeTrainingPrograms = viewmodel.SelectedTrainingPrograms;
+            List<int> employeeTrainingPrograms = viewmodel.SelectedTrainingProgramIds;
 
             Computer computer = viewmodel.Computer;
 
@@ -199,12 +216,37 @@ namespace BangazonWorkforce.Controllers
                                        IsSupervisor = {(employee.IsSupervisor ? 1 : 0)},
                                        DepartmentId = {employee.DepartmentId}
                                  WHERE id = {id};";
+                
+                
+                string computerResetSql = "";
 
-                string computerSql = $@"UPDATE ComputerEmployee
-                                            SET ComputerId = {computer.Id}
-                                        WHERE EmployeeId = {employee.Id};";
+                string computerAddSql = "";
 
-                sql = sql + computerSql;
+                if (computer.Id != 0) 
+                { 
+                
+                    computerResetSql = $@"DELETE FROM ComputerEmployee WHERE EmployeeId = {employee.Id};";
+
+                    computerAddSql = $@"INSERT INTO ComputerEmployee
+                                        (ComputerId, EmployeeId, AssignDate)
+                                        VALUES
+                                        ({ computer.Id }, { employee.Id }, '{DateTime.Now}');";
+                }
+
+                string trainingResetSql = $@"DELETE FROM EmployeeTraining WHERE EmployeeId = {employee.Id};";
+
+                string trainingAddSql = "";
+
+                foreach (int num in employeeTrainingPrograms) 
+                {
+                    trainingAddSql = trainingAddSql + $@"
+                        INSERT INTO EmployeeTraining
+                        (EmployeeId, TrainingProgramId)
+                        VALUES
+                        ({employee.Id}, {num});";
+                }
+
+                sql = sql + computerResetSql + computerAddSql + trainingResetSql + trainingAddSql;
 
                 await conn.ExecuteAsync(sql);
 
@@ -296,17 +338,36 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-        private async Task<Computer> GetEmployeeComputer(int id)
+        private async Task<Computer> GetComputerById(int id)
         {
             using (IDbConnection conn = Connection)
             {
                 string sql = $@"SELECT c.Id, 
+                                       c.PurchaseDate,
+                                       c.DecomissionDate,
                                        c.Make, 
-                                       c.Manufacturer 
+                                       c.Manufacturer
                                 FROM Computer c
-                                JOIN ComputerEmployee ce ON ce.ComputerId = c.Id
-                                JOIN Employee e ON e.Id = ce.EmployeeId
-                                WHERE e.Id = {id}";
+                                WHERE c.Id = {id}";
+
+                Computer computer = await conn.QueryFirstAsync<Computer>(sql);
+                return computer;
+            }
+        }
+
+        private async Task<Computer> GetEmployeeComputer(int id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"SELECT  c.Id,
+		                                c.PurchaseDate,
+		                                c.DecomissionDate,
+		                                c.Make, 
+		                                c.Manufacturer
+                                FROM Employee e
+                                LEFT JOIN ComputerEmployee ce ON ce.EmployeeId = e.Id
+                                LEFT JOIN Computer c ON c.Id = ce.ComputerId
+                                WHERE e.Id = {id};";
 
                 Computer computer = await conn.QueryFirstAsync<Computer>(sql);
                 return computer;

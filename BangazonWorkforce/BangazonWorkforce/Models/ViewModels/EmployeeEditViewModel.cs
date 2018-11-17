@@ -21,11 +21,12 @@ namespace BangazonWorkforce.Models.ViewModels
 
         public List<Computer> AllComputers { get; set; }
 
-        [Display(Name = "Select Training Programs")]
-        public List<TrainingProgram> SelectedTrainingPrograms { get; set; }
-
         [Display(Name = "Current Enrolled Training Programs")]
-        public List<TrainingProgram> EmployeeTrainingPrograms { get; set; }
+        public List<TrainingProgram> EmployeeTrainingPrograms { get; set; } 
+
+        public List<int> PreselectedTrainingPrograms { get; set; } 
+
+        public List<int> SelectedTrainingProgramIds { get; set; }
 
         public List<TrainingProgram> AllTrainingPrograms { get; set; }
 
@@ -43,6 +44,8 @@ namespace BangazonWorkforce.Models.ViewModels
                         .ToList();
             }
         }
+
+
         public List<SelectListItem> AllComputerOptions
         {
             get
@@ -51,12 +54,27 @@ namespace BangazonWorkforce.Models.ViewModels
                 {
                     return null;
                 }
-
-                return AllComputers
+                List<SelectListItem> computerOptions = new List<SelectListItem>();
+                computerOptions = AllComputers
                         .Select((c) => new SelectListItem(c.Make, c.Id.ToString()))
                         .ToList();
+
+                if (Computer.Id == 0) 
+                {
+                    computerOptions.Insert(0, new SelectListItem
+                    {
+                        Text = "Assign a Computer...",
+                        Value = "0"
+                    });
+                }
+                
+                return computerOptions;
             }
+
+           
         }
+
+
         public List<SelectListItem> AllTrainingProgramOptions
         {
             get
@@ -66,9 +84,22 @@ namespace BangazonWorkforce.Models.ViewModels
                     return null;
                 }
 
-                return AllTrainingPrograms
+                PreselectedTrainingPrograms = EmployeeTrainingPrograms.Select((tp) => tp.Id).ToList();
+
+                List<SelectListItem> allOptions = AllTrainingPrograms
                         .Select((tp) => new SelectListItem(tp.Name, tp.Id.ToString()))
                         .ToList();
+                foreach (int Id in PreselectedTrainingPrograms) {
+                    foreach (SelectListItem sli in allOptions) {
+                        if (sli.Value == Id.ToString())
+                        {
+                            sli.Selected = true;
+                            
+                        }
+                    }
+                }
+
+                return allOptions;
             }
         }
     }
