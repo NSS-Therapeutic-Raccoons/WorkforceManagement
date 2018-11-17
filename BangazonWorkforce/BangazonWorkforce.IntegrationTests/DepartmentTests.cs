@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
+//Added assert for input values of createhtml
 namespace BangazonWorkforce.IntegrationTests
 {
     public class DepartmentTests :
@@ -18,7 +19,7 @@ namespace BangazonWorkforce.IntegrationTests
         {
             _client = factory.CreateClient();
         }
-
+        
         [Fact]
         public async Task Get_IndexReturnsSuccessAndCorrectContentType()
         {
@@ -66,6 +67,12 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Contains(
                 indexPage.QuerySelectorAll("td"), 
                 td => td.TextContent.Contains(newDepartmentBudget));
+            Assert.Contains(
+                createPage.QuerySelectorAll("Input"),
+                i => i.Id == "Name");
+            Assert.Contains(
+               createPage.QuerySelectorAll("Input"),
+               i => i.Id == "Budget");
         }
     }
 }
