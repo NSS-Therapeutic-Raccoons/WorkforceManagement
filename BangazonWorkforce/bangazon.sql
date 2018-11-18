@@ -365,6 +365,25 @@ INSERT INTO Computer
 VALUES 
 ('170425 10:34:09 AM', null, 'Surface Tablet Pro', 'Microsoft');
 
+INSERT INTO Computer
+(PurchaseDate, DecomissionDate, Make, Manufacturer)
+VALUES
+('2017-04-25 10:34:09.000', NULL, 'Apple', 'iPad Pro');
+
+INSERT INTO Computer
+(PurchaseDate, DecomissionDate, Make, Manufacturer)
+VALUES
+('2017-04-25 10:34:09.000', NULL, 'Apple', 'MacBook Pro 2018');
+
+INSERT INTO Computer
+(PurchaseDate, DecomissionDate, Make, Manufacturer)
+VALUES
+('2017-04-25 10:34:09.000', NULL, 'LameTop', 'HP');
+
+INSERT INTO Computer
+(PurchaseDate, DecomissionDate, Make, Manufacturer)
+VALUES
+('2017-04-25 10:34:09.000', NULL, 'Singing Dell', 'Dell');
 
 INSERT INTO ComputerEmployee 
 (EmployeeId, ComputerId, AssignDate)
@@ -393,6 +412,66 @@ VALUES
 
 
 INSERT INTO TrainingProgram
-(Name, StartDate, EndDate, MaxAttendees)
+([Name], StartDate, EndDate, MaxAttendees)
 VALUES
 ('You Are the First Line of Defence!','170425 10:34:09 AM', '180618 10:34:09 AM', 15);
+
+INSERT INTO TrainingProgram
+([Name], StartDate, EndDate, MaxAttendees)
+VALUES
+('How to write SQL', '2018-11-14 10:00:00.000', '2019-12-14 10:00:00.000', 30);
+
+INSERT INTO TrainingProgram
+([Name], StartDate, EndDate, MaxAttendees)
+VALUES
+('How to write C#', '2018-11-14 10:00:00.000', '2019-12-14 10:00:00.000', 30);
+
+INSERT INTO TrainingProgram
+([Name], StartDate, EndDate, MaxAttendees)
+VALUES
+('How to Make Steve Smile', '2018-11-14 10:00:00.000', '2019-12-14 10:00:00.000', 30);
+
+INSERT INTO TrainingProgram
+([Name], StartDate, EndDate, MaxAttendees)
+VALUES
+('How to run a marathon with Andy', '2018-11-14 10:00:00.000', '2019-12-14 10:00:00.000', 30);
+
+INSERT INTO TrainingProgram
+([Name], StartDate, EndDate, MaxAttendees)
+VALUES
+('How to write a ReadMe', '2018-11-14 10:00:00.000', '2019-12-14 10:00:00.000', 30);
+
+INSERT INTO EmployeeTraining
+(EmployeeId, TrainingProgramId)
+VALUES
+(1, 1);
+
+INSERT INTO EmployeeTraining
+(EmployeeId, TrainingProgramId)
+VALUES
+(1, 2);
+
+INSERT INTO EmployeeTraining
+(EmployeeId, TrainingProgramId)
+VALUES
+(1, 3);
+
+INSERT INTO EmployeeTraining
+(EmployeeId, TrainingProgramId)
+VALUES
+(2, 1);
+
+INSERT INTO EmployeeTraining
+(EmployeeId, TrainingProgramId)
+VALUES
+(2, 2);
+
+INSERT INTO EmployeeTraining
+(EmployeeId, TrainingProgramId)
+VALUES
+(3, 1);
+
+INSERT INTO EmployeeTraining
+(EmployeeId, TrainingProgramId)
+VALUES
+(4, 1);

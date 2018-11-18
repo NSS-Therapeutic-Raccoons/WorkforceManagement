@@ -152,7 +152,7 @@ namespace BangazonWorkforce.Controllers
 
             List<Department> allDepartments = await GetAllDepartments();
 
-            List<Computer> allActiveComputers = await GetAllActiveComputers();
+            List<Computer> allActiveComputers = await GetAllAvailableComputers();
 
             List<TrainingProgram> employeeTrainingPrograms = await GetEmployeeTrainingPrograms(id.Value);
 
@@ -327,21 +327,33 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-        private async Task<List<Computer>> GetAllActiveComputers()
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get only the active computers not currently assigned to other employees from the database.
+        */
+        private async Task<List<Computer>> GetAllAvailableComputers()
         {
             using (IDbConnection conn = Connection)
             {
-                string sql = $@"SELECT c.Id, 
-                                       c.Make, 
-                                       c.Manufacturer 
+                string sql = $@"SELECT	c.Id,
+		                                c.PurchaseDate,
+		                                c.DecomissionDate, 
+		                                c.Make, 
+		                                c.Manufacturer 
                                 FROM Computer c
-                                WHERE c.DecomissionDate IS NULL";
+                                LEFT JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                                WHERE ce.ComputerId IS NULL
+                                AND c.DecomissionDate IS NULL";
 
                 IEnumerable<Computer> computers = await conn.QueryAsync<Computer>(sql);
                 return computers.ToList();
             }
         }
 
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get a specific computer from the database.
+        */
         private async Task<Computer> GetComputerById(int id)
         {
             using (IDbConnection conn = Connection)
@@ -359,6 +371,10 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get the computer currently assigned to an employee from the database.
+        */
         private async Task<Computer> GetEmployeeComputer(int id)
         {
             using (IDbConnection conn = Connection)
@@ -378,8 +394,10 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-
-
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get all training programs from the database.
+        */
         private async Task<List<TrainingProgram>> GetAllTrainingPrograms()
         {
             using (IDbConnection conn = Connection)
@@ -398,6 +416,11 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get training programs currently enrolled in for an employee from the database.
+        */
         private async Task<List<TrainingProgram>> GetEmployeeTrainingPrograms(int id)
         {
             using (IDbConnection conn = Connection)
