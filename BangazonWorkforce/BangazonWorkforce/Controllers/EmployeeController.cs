@@ -72,6 +72,11 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: Query database for necessary data to render the employee details page.
+        */
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
