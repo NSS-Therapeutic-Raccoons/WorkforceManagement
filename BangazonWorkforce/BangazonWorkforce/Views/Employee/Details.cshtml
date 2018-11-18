@@ -1,4 +1,4 @@
-﻿@model BangazonWorkforce.Models.Employee
+﻿@model BangazonWorkforce.Models.ViewModels.EmployeeDetailViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -11,22 +11,22 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.FirstName)
+            @Html.DisplayNameFor(model => model.Employee.FirstName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.FirstName)
+            @Html.DisplayFor(model => model.Employee.FirstName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.LastName)
+            @Html.DisplayNameFor(model => model.Employee.LastName)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.LastName)
+            @Html.DisplayFor(model => model.Employee.LastName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.IsSupervisor)
+            @Html.DisplayNameFor(model => model.Employee.IsSupervisor)
         </dt>
         <dd>
-            @if (!Model.IsSupervisor)
+            @if (Model.Employee.IsSupervisor)
             {
                 <span>Yes</span>
             }
@@ -36,14 +36,40 @@
             }
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.DepartmentId)
+            @Html.DisplayNameFor(model => model.Employee.DepartmentId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Department.Name)
+            @Html.DisplayFor(model => model.Employee.Department.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Computer)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Computer.Manufacturer) - @Html.DisplayFor(model => model.Computer.Make)
         </dd>
     </dl>
+    <hr />
+    <div class="row">
+        <label class="control-label col-sm-2">
+            @Html.DisplayNameFor(model => model.TrainingPrograms) :
+        </label>
+        <ul class="list-group col-sm-6">
+            @foreach (TrainingProgram tp in Model.TrainingPrograms)
+            {
+                <li class="list-group-item row d-flex justify-content-between align-items-center">
+                    <span class="training-program-name col-sm-7">
+                        @tp.Name
+                    </span>
+                    <span class="col-sm-5 badge badge-primary badge-pill">
+                        @tp.StartDate
+                    </span>
+                </li>
+            }
+        </ul>
+    </div>
 </div>
+<hr />
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Employee.Id }) |
     <a asp-action="Index">Back to List</a>
 </div>

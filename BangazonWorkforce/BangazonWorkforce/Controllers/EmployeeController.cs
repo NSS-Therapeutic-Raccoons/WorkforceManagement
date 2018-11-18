@@ -84,7 +84,19 @@ namespace BangazonWorkforce.Controllers
             {
                 return NotFound();
             }
-            return View(employee);
+
+            Computer computer = await GetEmployeeComputer(id.Value);
+
+            List<TrainingProgram> trainingPrograms = await GetEmployeeTrainingPrograms(id.Value);
+
+            EmployeeDetailViewModel viewmodel = new EmployeeDetailViewModel
+            {
+                Employee = employee,
+                Computer = computer,
+                TrainingPrograms = trainingPrograms
+            };
+            
+            return View(viewmodel);
         }
 
         // GET: Employee/Create

@@ -128,6 +128,72 @@ namespace BangazonWorkforce.IntegrationTests
 
 
         /*
+            * Author: Ricky Bruner
+            * Purpose: Grab the first employee from the database and make sure that all details are showing up accurately.
+        */
+        [Fact]
+        public async Task Get_DetailContentVerified()
+        {
+            // Arrange
+            Employee employee = await GetFullEmployee();
+
+            Computer computer = await GetEmployeeComputer(employee.Id);
+
+            List<TrainingProgram> trainingPrograms = (await GetEmployeeTrainingPrograms(employee.Id));
+
+            string url = $"/employee/details/{employee.Id}";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync(url);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("text/html; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            IHtmlDocument detailPage = await HtmlHelpers.GetDocumentAsync(response);
+
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(employee.FirstName));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(employee.LastName));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(employee.Department.Name));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(computer.Manufacturer));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(computer.Make));
+
+            if (employee.IsSupervisor == true)
+            {
+                Assert.Contains(
+                    detailPage.QuerySelectorAll("dd"),
+                    td => td.TextContent.Contains("Yes"));
+            }
+            else
+            {
+                Assert.Contains(
+                    detailPage.QuerySelectorAll("dd"),
+                    td => td.TextContent.Contains("No"));
+            }
+
+            foreach (var trainingProgram in trainingPrograms) 
+            { 
+                Assert.Contains(
+                    detailPage.QuerySelectorAll("li"),
+                    li => li.TextContent.Contains(trainingProgram.Name));
+            
+            }
+         
+        }
+
+
+        /*
             * Author: Ricky Bruner 
             * Purpose: This test gets all pertinent data from the db needed to update an employee, then changes it to recognizeably changed data. It then runs an edit and asserts that the chages were made from the index view.
         */
@@ -273,6 +339,28 @@ namespace BangazonWorkforce.IntegrationTests
             }
         }
 
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get the computer currently assigned to an employee from the database.
+        */
+        private async Task<Computer> GetEmployeeComputer(int id)
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            {
+                string sql = $@"SELECT  c.Id,
+		                                c.PurchaseDate,
+		                                c.DecomissionDate,
+		                                c.Make, 
+		                                c.Manufacturer
+                                FROM Employee e
+                                LEFT JOIN ComputerEmployee ce ON ce.EmployeeId = e.Id
+                                LEFT JOIN Computer c ON c.Id = ce.ComputerId
+                                WHERE e.Id = {id};";
+
+                Computer computer = await conn.QueryFirstAsync<Computer>(sql);
+                return computer;
+            }
+        }
 
         /*
             * Author: Ricky Bruner 
@@ -292,6 +380,31 @@ namespace BangazonWorkforce.IntegrationTests
                         MaxAttendees
                     FROM TrainingProgram");
                 return allTrainingPrograms.ToList();
+            }
+        }
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get training programs currently enrolled in for an employee from the database.
+        */
+        private async Task<List<TrainingProgram>> GetEmployeeTrainingPrograms(int id)
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            {
+                string sql = $@"
+                            SELECT tp.Id, 
+                                   tp.[Name],
+                                   tp.StartDate,
+                                   tp.EndDate,
+                                   tp.MaxAttendees
+                            FROM TrainingProgram tp
+                            JOIN EmployeeTraining etp ON etp.TrainingProgramId = tp.Id
+                            JOIN Employee e On e.Id = etp.EmployeeId
+                            WHERE e.Id = {id}
+                            ";
+
+                IEnumerable<TrainingProgram> trainingPrograms = await conn.QueryAsync<TrainingProgram>(sql);
+                return trainingPrograms.ToList();
             }
         }
     }
