@@ -171,10 +171,7 @@ namespace BangazonWorkforce.Controllers
                 string sql = $@"DELETE FROM Department WHERE id = {id}";
                 int rowsDeleted = await conn.ExecuteAsync(sql);
                 
-                if (rowsDeleted > 0)
-                {
-                    return NotFound();
-                }
+              
 
                 return RedirectToAction(nameof(Index));
             }

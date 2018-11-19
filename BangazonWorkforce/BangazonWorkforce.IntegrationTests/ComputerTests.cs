@@ -39,11 +39,11 @@ namespace BangazonWorkforce.IntegrationTests
         public async Task Post_CreateAddsComputer()
         {
             // Arrange
-            string url = "/computer/create";
+            string url = "computer/create";
             HttpResponseMessage createPageResponse = await _client.GetAsync(url);
             IHtmlDocument createPage = await HtmlHelpers.GetDocumentAsync(createPageResponse);
 
-            //object SystemTime = null;
+            //string mydate = "2018-12-12";
             string newComputerPurchaseDate = DateTime.Now.ToString();
             string newComputerManufacturer = "Manufacturer-" + Guid.NewGuid().ToString();
             string newComputerMake = "Make-" + Guid.NewGuid().ToString();
@@ -65,19 +65,19 @@ namespace BangazonWorkforce.IntegrationTests
 
             IHtmlDocument indexPage = await HtmlHelpers.GetDocumentAsync(response);
             
-            Assert.Contains(
+           Assert.Contains(
                 indexPage.QuerySelectorAll("td"), 
-                td => td.TextContent.Contains(newComputerPurchaseDate));
+               td => td.TextContent.Contains(newComputerPurchaseDate));
                 
             Assert.Contains(
-                indexPage.QuerySelectorAll("td"), 
+                indexPage.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(newComputerManufacturer));
             Assert.Contains(
                indexPage.QuerySelectorAll("td"),
                td => td.TextContent.Contains(newComputerMake));
-            /*
+            
             Assert.Contains(
-                createPage.QuerySelectorAll("Input"),
+               createPage.QuerySelectorAll("Input"),
                 i => i.Id == "PurchaseDate");
             Assert.Contains(
                createPage.QuerySelectorAll("Input"),
@@ -85,7 +85,7 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Contains(
               createPage.QuerySelectorAll("Input"),
               i => i.Id == "Make");
-              */
+              
         }
     }
 }

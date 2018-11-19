@@ -177,8 +177,8 @@ namespace BangazonWorkforce.Controllers
                         return NotFound();
                     }
     */
-                    //find id match in computeremployee and if employeeId not NULL present error
-                    //can't delete anyway because get foreign key constraint
+                    //find id match in computeremployee and if employeeId not NULL present error msg
+                    //can't delete anyway because get foreign key constraint so used try catch
                     return RedirectToAction(nameof(Index));
                 }
             
