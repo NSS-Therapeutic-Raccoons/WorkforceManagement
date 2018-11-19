@@ -15,6 +15,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace BangazonWorkforce.IntegrationTests
 {
+    
+    /*
+        * Author: Theraputic Raccoons 
+        * Purpose: Houses the employee specific integration tests and neccesary database queries to ensure that the employees section words properly.
+    */
     public class EmployeeTests :
         IClassFixture<WebApplicationFactory<BangazonWorkforce.Startup>>
     {
@@ -40,6 +45,11 @@ namespace BangazonWorkforce.IntegrationTests
                 response.Content.Headers.ContentType.ToString());
         }
 
+
+        /*
+            * Author: Ricky Bruner 
+            * Purpose: This test verifies that the index page displays a first and last name along with correct department name for any employee from the database.
+        */
         [Fact]
         public async Task Get_IndexContentVerified()
         {
@@ -114,8 +124,6 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Contains(
                 lastRow.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(departmentName));
-
-            
         }
 /*
           Author: Jeremiah Pritchard
@@ -153,12 +161,19 @@ namespace BangazonWorkforce.IntegrationTests
 
 
 
+
+        /*
+            * Author: Ricky Bruner 
+            * Purpose: This test gets all pertinent data from the db needed to update an employee, then changes it to recognizeably changed data. It then runs an edit and asserts that the chages were made from the index view.
+        */
         [Fact]
         public async Task Post_EditWillUpdateEmployee()
         {
             // Arrange
             Employee employee = (await GetAllEmloyees()).Last();
             Department department = (await GetAllDepartments()).Last();
+            Computer computer = (await GetAllAvailableComputers()).Last();
+            string selectedId = (await GetAllTrainingPrograms()).Select((tp) => tp.Id).ToList().Last().ToString();
 
             string url = $"employee/edit/{employee.Id}";
             HttpResponseMessage editPageResponse = await _client.GetAsync(url);
@@ -171,7 +186,9 @@ namespace BangazonWorkforce.IntegrationTests
             string isSupervisor = employee.IsSupervisor ? "false" : "true";
             string departmentId = department.Id.ToString();
             string departmentName = department.Name;
+            string computerId = computer.Id.ToString();
 
+            
 
             // Act
             HttpResponseMessage response = await _client.SendAsync(
@@ -181,7 +198,9 @@ namespace BangazonWorkforce.IntegrationTests
                     {"Employee_FirstName", firstName},
                     {"Employee_LastName", lastName},
                     {"Employee_IsSupervisor", isSupervisor},
-                    {"Employee_DepartmentId", departmentId}
+                    {"Employee_DepartmentId", departmentId},
+                    {"Computer_Id", computerId},
+                    {"SelectedTrainingProgramIds", selectedId }
                 });
 
 
@@ -200,16 +219,6 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Contains(
                 lastRow.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(departmentName));
-
-            IHtmlInputElement cb = (IHtmlInputElement)lastRow.QuerySelector("input[type='checkbox']");
-            if (isSupervisor == "true")
-            {
-                Assert.True(cb.IsChecked);
-            }
-            else
-            {
-                Assert.False(cb.IsChecked);
-            }
         }
 
         private async Task<List<Employee>> GetAllEmloyees()
@@ -233,8 +242,7 @@ namespace BangazonWorkforce.IntegrationTests
 
         /* 
             * Author: Ricky Bruner
-            
-            * Purpose: Grab a Single employee with its department joined to it from the database for the Get_IndexContentVerified test above. 
+            * Purpose: Grab a Single employee with its department joined to it from the database.
         */
         private async Task<Employee> GetFullEmployee()
         {
@@ -274,9 +282,80 @@ namespace BangazonWorkforce.IntegrationTests
                         Budget
                     FROM Department");
                 return allDepartments.ToList();
+
             }   
          }
 
 
    }
+
+            
+       
+
+
+        /*
+            * Author: Ricky Bruner 
+            * Purpose: Get all Computers from the Database.
+        */
+        private async Task<List<Computer>> GetAllComputers()
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
+            {
+                IEnumerable<Computer> allComputers =
+                    await conn.QueryAsync<Computer>(@"
+                    SELECT
+                        Id,
+                        PurchaseDate,
+                        DecomissionDate,
+                        Make,
+                        Manufacturer
+                    FROM Computer");
+                return allComputers.ToList();
+            }
+        }
+
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get only the active computers not currently assigned to other employees from the database.
+        */
+        private async Task<List<Computer>> GetAllAvailableComputers()
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
+            {
+                string sql = $@"SELECT	c.Id,
+		                                c.PurchaseDate,
+		                                c.DecomissionDate, 
+		                                c.Make, 
+		                                c.Manufacturer 
+                                FROM Computer c
+                                LEFT JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                                WHERE ce.ComputerId IS NULL
+                                AND c.DecomissionDate IS NULL";
+
+                IEnumerable<Computer> computers = await conn.QueryAsync<Computer>(sql);
+                return computers.ToList();
+            }
+        }
+
+        /*
+            * Author: Ricky Bruner 
+            * Purpose: Get all Training Programs from the Database.
+        */
+        private async Task<List<TrainingProgram>> GetAllTrainingPrograms()
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
+            {
+                IEnumerable<TrainingProgram> allTrainingPrograms =
+                    await conn.QueryAsync<TrainingProgram>(@"
+                    SELECT
+                        Id,
+                        [Name],
+                        StartDate,
+                        EndDate,
+                        MaxAttendees
+                    FROM TrainingProgram");
+                return allTrainingPrograms.ToList();
+            }
+        }
 }

@@ -15,7 +15,12 @@ namespace BangazonWorkforce.Models
 
         public DateTime? DecomissionDate { get; set; }
 
+<<<<<<< HEAD
         [Display(Name = "Assigned Computers")]
+=======
+        
+        [Display(Name = "Make")]
+>>>>>>> master
         public string Make { get; set; }
 
         public string Manufacturer { get; set; }

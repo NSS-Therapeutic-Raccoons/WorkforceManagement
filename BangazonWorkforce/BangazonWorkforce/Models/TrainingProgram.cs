@@ -11,7 +11,10 @@ namespace BangazonWorkforce.Models
         
         public int Id { get; set; }
 
+<<<<<<< HEAD
         [Display(Name = "Training Programs")]
+=======
+>>>>>>> master
         public string Name { get; set; }
 
         public DateTime StartDate { get; set; }
