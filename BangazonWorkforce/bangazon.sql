@@ -454,7 +454,6 @@ VALUES
 INSERT INTO EmployeeTraining
 (EmployeeId, TrainingProgramId)
 VALUES
-<<<<<<< HEAD
 ('You Are the First Line of Defence!','170425 10:34:09 AM', '180618 10:34:09 AM', 15);
 
 INSERT INTO TrainingProgram
