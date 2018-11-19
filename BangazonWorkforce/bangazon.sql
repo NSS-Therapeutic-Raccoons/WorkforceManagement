@@ -470,8 +470,7 @@ Insert into EmployeeTraining
 (EmployeeId,TrainingProgramId)
 Values
 (1,2);
-=======
-(1, 3);
+
 
 INSERT INTO EmployeeTraining
 (EmployeeId, TrainingProgramId)
@@ -492,4 +491,3 @@ INSERT INTO EmployeeTraining
 (EmployeeId, TrainingProgramId)
 VALUES
 (4, 1);
->>>>>>> master
