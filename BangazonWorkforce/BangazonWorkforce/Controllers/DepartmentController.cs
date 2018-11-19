@@ -56,23 +56,79 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-        public async Task<IActionResult> Details(int? id) 
+        public async Task<ActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            DepartmentDetailsViewModel Placeholder = new DepartmentDetailsViewModel();
+            Dictionary<int, List<Employee>> report = new Dictionary<int, List<Employee>>();
+            string sql = $@"
+            SELECT
+                d.Id,
+                d.Name,
+                d.Budget,
+                e.Id, 
+                e.FirstName,
+                e.LastName, 
+                e.IsSupervisor,
+                e.DepartmentId
+            FROM Department d
+            LEFT OUTER JOIN Employee e ON d.Id = e.DepartmentId
+            WHERE d.Id = {id}
+            ";
 
-            Department department = await GetById(id.Value);
-            if (department == null)
+            using (IDbConnection conn = Connection)
             {
-                return NotFound();
+                IEnumerable<Department> departments = await conn.QueryAsync<Department, Employee, Department>(
+                sql,
+                (department, employee) =>
+                    {
+                        Placeholder.Department = department;
+                        if (!report.ContainsKey(department.Id))
+                        {
+                            report[department.Id] = new List<Employee>();
+                        }
+                        //Why do I need the dictionary
+                        Placeholder.AllEmployees.Add(employee);
+                        return (department);
+                    });
+                    return View(Placeholder);
             }
-            return View(department);
+        }
+        /*
+        if (_include == "payments")
+                {
+                    Dictionary<int, Customer> report = new Dictionary<int, Customer>();
+
+        IEnumerable<Customer> custAndPay = Connection.Query<Customer, PaymentType, Customer>(
+          $@"
+                    SELECT c.Id,
+                        c.FirstName,
+                        c.LastName,
+                        p.Id,
+                        p.AcctNumber,
+                        p.Name,
+                        p.CustomerId
+                    FROM Customer c
+                    JOIN PaymentType p ON c.Id = p.CustomerId
+                    WHERE c.Id = {id};
+                ",
+                }*/
+    /*public async Task<IActionResult> Details(int? id) 
+    {
+        if (id == null)
+        {
+            return NotFound();
         }
 
-        // GET: Department/Create
-        public IActionResult Create()
+        Department department = await GetById(id.Value);
+        if (department == null)
+        {
+            return NotFound();
+        }
+        return View(department);
+    }*/
+
+    // GET: Department/Create
+    public IActionResult Create()
         {
             return View();
         }

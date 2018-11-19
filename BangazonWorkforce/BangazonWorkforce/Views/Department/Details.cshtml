@@ -1,4 +1,4 @@
-﻿@model BangazonWorkforce.Models.Department
+﻿@model BangazonWorkforce.Models.DepartmentDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -11,20 +11,32 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Department.Name)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Department.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Budget)
+            @Html.DisplayNameFor(model => model.Department.Budget)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Budget)
+            @Html.DisplayFor(model => model.Department.Budget)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Department.Budget)
+        </dt>
+        <dd>
+            <div class="form-group">
+                <label asp-for="Department.Id" class="control-label"></label>
+                <select asp-for="Department.Id"
+                        asp-items="Model.AllEmployeeOptions"
+                        class="form-control"></select>
+                <span asp-validation-for="Department.Id" class="text-danger"></span>
+            </div>
         </dd>
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Department.Id }) |
     <a asp-action="Index">Back to List</a>
 </div>
