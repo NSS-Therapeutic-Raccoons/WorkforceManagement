@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace BangazonWorkforce.IntegrationTests
 {
-    
+
     /*
         * Author: Theraputic Raccoons 
         * Purpose: Houses the employee specific integration tests and neccesary database queries to ensure that the employees section words properly.
@@ -35,7 +35,7 @@ namespace BangazonWorkforce.IntegrationTests
         {
             // Arrange
             string url = "/employee";
-            
+
             // Act
             HttpResponseMessage response = await _client.GetAsync(url);
 
@@ -78,8 +78,6 @@ namespace BangazonWorkforce.IntegrationTests
                 td => td.TextContent.Contains(fullEmployee.Department.Name));
 
         }
-    
-
 
         [Fact]
         public async Task Post_CreateAddsEmployee()
@@ -125,40 +123,67 @@ namespace BangazonWorkforce.IntegrationTests
                 lastRow.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(departmentName));
         }
-/*
-          Author: Jeremiah Pritchard
-          Purpose:Using a specific user to make sure fields are populated.
-*/
+ 
         [Fact]
-        public async Task Get_EmployeeDetailVerification()
+        public async Task Get_DetailContentVerified()
         {
-            //Arrange
-            string url = "/employee/details/1";
-            //Act
-            HttpResponseMessage response = await _client.GetAsync(url);
-            //Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
-            IHtmlDocument DetailPage = await HtmlHelpers.GetDocumentAsync(response);
-            Assert.Contains(
-                DetailPage.QuerySelectorAll("dd"),
-                dd => dd.TextContent.Contains("Mike"));
-            Assert.Contains(
-                DetailPage.QuerySelectorAll("dd"),
-                dd => dd.TextContent.Contains("Parrish"));
-            Assert.Contains(
-                DetailPage.QuerySelectorAll("span"),
-                span => span.TextContent.Contains("No"));
-            Assert.Contains(
-                DetailPage.QuerySelectorAll("dd"),
-                dd => dd.TextContent.Contains("Navy"));
-            Assert.Contains(
-                DetailPage.QuerySelectorAll("dd"),
-                dd => dd.TextContent.Contains("Surface Tablet"));
-            Assert.Contains(
-                DetailPage.QuerySelectorAll("dd"),
-                dd => dd.TextContent.Contains("You Are the First Line of Defence!"));
-        }
+            // Arrange
+            Employee employee = await GetFullEmployee();
 
+            Computer computer = await GetEmployeeComputer(employee.Id);
+
+            List<TrainingProgram> trainingPrograms = (await GetEmployeeTrainingPrograms(employee.Id));
+
+            string url = $"/employee/details/{employee.Id}";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync(url);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("text/html; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            IHtmlDocument detailPage = await HtmlHelpers.GetDocumentAsync(response);
+
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(employee.FirstName));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(employee.LastName));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(employee.Department.Name));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(computer.Manufacturer));
+            Assert.Contains(
+                detailPage.QuerySelectorAll("dd"),
+                td => td.TextContent.Contains(computer.Make));
+
+            if (employee.IsSupervisor == true)
+            {
+                Assert.Contains(
+                    detailPage.QuerySelectorAll("dd"),
+                    td => td.TextContent.Contains("Yes"));
+            }
+            else
+            {
+                Assert.Contains(
+                    detailPage.QuerySelectorAll("dd"),
+                    td => td.TextContent.Contains("No"));
+            }
+
+            foreach (var trainingProgram in trainingPrograms)
+            {
+                Assert.Contains(
+                    detailPage.QuerySelectorAll("dd"),
+                    dd => dd.TextContent.Contains(trainingProgram.Name));
+
+            }
+
+        }
 
 
 
@@ -188,7 +213,7 @@ namespace BangazonWorkforce.IntegrationTests
             string departmentName = department.Name;
             string computerId = computer.Id.ToString();
 
-            
+
 
             // Act
             HttpResponseMessage response = await _client.SendAsync(
@@ -226,7 +251,7 @@ namespace BangazonWorkforce.IntegrationTests
             using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
             {
                 IEnumerable<Employee> allEmployees =
-                    await conn.QueryAsync<Employee>( @"
+                    await conn.QueryAsync<Employee>(@"
                     SELECT
                         Id,
                         FirstName,
@@ -262,7 +287,8 @@ namespace BangazonWorkforce.IntegrationTests
                     JOIN Department d ON d.Id = e.DepartmentId
                 ";
                 IEnumerable<Employee> Employees =
-                    await conn.QueryAsync<Employee, Department, Employee>(sql, (employee, department) => {
+                    await conn.QueryAsync<Employee, Department, Employee>(sql, (employee, department) =>
+                    {
                         employee.Department = department;
                         return employee;
                     });
@@ -274,7 +300,7 @@ namespace BangazonWorkforce.IntegrationTests
         {
             using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
             {
-                IEnumerable<Department> allDepartments = 
+                IEnumerable<Department> allDepartments =
                     await conn.QueryAsync<Department>(@"
                     SELECT
                         Id,
@@ -283,16 +309,8 @@ namespace BangazonWorkforce.IntegrationTests
                     FROM Department");
                 return allDepartments.ToList();
 
-            }   
-         }
-
-
-   }
-
-            
-       
-
-
+            }
+        }
         /*
             * Author: Ricky Bruner 
             * Purpose: Get all Computers from the Database.
@@ -358,4 +376,53 @@ namespace BangazonWorkforce.IntegrationTests
                 return allTrainingPrograms.ToList();
             }
         }
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get the computer currently assigned to an employee from the database.
+        */
+        private async Task<Computer> GetEmployeeComputer(int id)
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
+            {
+                string sql = $@"SELECT  c.Id,
+                                        c.PurchaseDate,
+                                        c.DecomissionDate,
+                                        c.Make, 
+                                        c.Manufacturer
+                                FROM Employee e
+                                LEFT JOIN ComputerEmployee ce ON ce.EmployeeId = e.Id
+                                LEFT JOIN Computer c ON c.Id = ce.ComputerId
+                                WHERE e.Id = {id};";
+
+                Computer computer = await conn.QueryFirstAsync<Computer>(sql);
+                return computer;
+            }
+        }
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get training programs currently enrolled in for an employee from the database.
+        */
+        private async Task<List<TrainingProgram>> GetEmployeeTrainingPrograms(int id)
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
+            {
+                string sql = $@"
+                            SELECT tp.Id, 
+                                   tp.[Name],
+                                   tp.StartDate,
+                                   tp.EndDate,
+                                   tp.MaxAttendees
+                            FROM TrainingProgram tp
+                            JOIN EmployeeTraining etp ON etp.TrainingProgramId = tp.Id
+                            JOIN Employee e On e.Id = etp.EmployeeId
+                            WHERE e.Id = {id}
+                            ";
+
+                IEnumerable<TrainingProgram> trainingPrograms = await conn.QueryAsync<TrainingProgram>(sql);
+                return trainingPrograms.ToList();
+            }
+        }
+    }
 }

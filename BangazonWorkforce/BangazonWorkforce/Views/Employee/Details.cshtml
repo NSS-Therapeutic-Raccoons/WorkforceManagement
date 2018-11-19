@@ -43,10 +43,13 @@
         <dt>
             @Html.DisplayNameFor(model => model.Computers)
         </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Computers)
-            @Html.DisplayFor(model => model.ComputerManufacturer)
-        </dd>
+        @foreach (var item in Model.Computers)
+        {
+            <dd>
+                @Html.DisplayFor(modelItem => item.Make):
+                @Html.DisplayFor(modelItem => item.Manufacturer)
+            </dd>
+        }
         <dt>
             @Html.DisplayNameFor(model => model.TrainingPrograms)
         </dt>
@@ -55,11 +58,8 @@
         {
             <dd>
                 @Html.DisplayFor(modelItem => item)
-            </dd>}
-
-        <dd>
-            @Html.DisplayFor(model => model.Department.Name)
-        </dd>
+            </dd>
+        }
     </dl>
 </div>
 <div>
