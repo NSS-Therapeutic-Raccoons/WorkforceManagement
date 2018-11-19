@@ -184,7 +184,6 @@ namespace BangazonWorkforce.IntegrationTests
             Assert.Contains(
                 lastRow.QuerySelectorAll("td"),
                 td => td.TextContent.Contains(departmentName));
-
         }
 
         private async Task<List<Employee>> GetAllEmloyees()

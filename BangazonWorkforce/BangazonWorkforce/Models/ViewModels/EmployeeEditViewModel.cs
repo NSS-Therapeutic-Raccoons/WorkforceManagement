@@ -68,7 +68,9 @@ namespace BangazonWorkforce.Models.ViewModels
                 {
                     return null;
                 }
+
                 List<SelectListItem> computerOptions = new List<SelectListItem>();
+
                 computerOptions = AllComputers
                         .Select((c) => new SelectListItem(c.Make, c.Id.ToString()))
                         .ToList();
@@ -81,11 +83,25 @@ namespace BangazonWorkforce.Models.ViewModels
                         Value = "0"
                     });
                 }
+
+                List<string> sliValues = new List<string>();
+
+                foreach (SelectListItem sli in computerOptions) 
+                {
+                    sliValues.Add(sli.Value);
+                }
+
+                if (!sliValues.Contains(Computer.Id.ToString())) 
+                {
+                    computerOptions.Insert(0, new SelectListItem
+                    {
+                        Text = Computer.Make,
+                        Value = Computer.Id.ToString()
+                    });
+                }
                 
                 return computerOptions;
-            }
-
-           
+            }  
         }
 
 

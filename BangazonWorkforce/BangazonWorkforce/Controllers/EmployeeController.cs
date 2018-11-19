@@ -212,6 +212,8 @@ namespace BangazonWorkforce.Controllers
 
             Computer computer = viewmodel.Computer;
 
+            Computer employeeComputer = await GetEmployeeComputer(employee.Id);
+
             using (IDbConnection conn = Connection)
             {
                 string sql = $@"UPDATE Employee 
@@ -226,7 +228,7 @@ namespace BangazonWorkforce.Controllers
 
                 string computerAddSql = "";
 
-                if (computer.Id != 0) 
+                if (computer.Id != 0 && computer.Id != employeeComputer.Id) 
                 { 
                 
                     computerResetSql = $@"DELETE FROM ComputerEmployee WHERE EmployeeId = {employee.Id};";
