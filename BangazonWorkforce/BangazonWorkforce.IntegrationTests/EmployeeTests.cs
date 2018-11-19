@@ -117,6 +117,41 @@ namespace BangazonWorkforce.IntegrationTests
 
             
         }
+/*
+          Author: Jeremiah Pritchard
+          Purpose:Using a specific user to make sure fields are populated.
+*/
+        [Fact]
+        public async Task Get_EmployeeDetailVerification()
+        {
+            //Arrange
+            string url = "/employee/details/1";
+            //Act
+            HttpResponseMessage response = await _client.GetAsync(url);
+            //Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            IHtmlDocument DetailPage = await HtmlHelpers.GetDocumentAsync(response);
+            Assert.Contains(
+                DetailPage.QuerySelectorAll("dd"),
+                dd => dd.TextContent.Contains("Mike"));
+            Assert.Contains(
+                DetailPage.QuerySelectorAll("dd"),
+                dd => dd.TextContent.Contains("Parrish"));
+            Assert.Contains(
+                DetailPage.QuerySelectorAll("span"),
+                span => span.TextContent.Contains("No"));
+            Assert.Contains(
+                DetailPage.QuerySelectorAll("dd"),
+                dd => dd.TextContent.Contains("Navy"));
+            Assert.Contains(
+                DetailPage.QuerySelectorAll("dd"),
+                dd => dd.TextContent.Contains("Surface Tablet"));
+            Assert.Contains(
+                DetailPage.QuerySelectorAll("dd"),
+                dd => dd.TextContent.Contains("You Are the First Line of Defence!"));
+        }
+
+
 
         [Fact]
         public async Task Post_EditWillUpdateEmployee()
@@ -242,62 +277,6 @@ namespace BangazonWorkforce.IntegrationTests
             }   
          }
 
-         /*Author: Jeremiah Pritchard
-          * 
-          * Purpose:Using a specific user to make sure fields are populated.
-          * */
-         [Fact]
-         public async Task Get_EmployeeDetailVerification()
-         {
-         //Arrange
-         string url = "/employee/details/1";
-
-            //Act
-            HttpResponseMessage response = await _client.GetAsync(url);
-
-
-            //Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
-            IHtmlDocument DetailPage = await HtmlHelpers.GetDocumentAsync(response);
-
-
-            Assert.Contains(
-               DetailPage.QuerySelectorAll("dd"),
-               dd => dd.TextContent.Contains("Mike"));
-            Assert.Contains(
-             DetailPage.QuerySelectorAll("dd"),
-             dd => dd.TextContent.Contains("Parrish"));
-            Assert.Contains(
-            DetailPage.QuerySelectorAll("span"),
-            span => span.TextContent.Contains("No"));
-            Assert.Contains(
-             DetailPage.QuerySelectorAll("dd"),
-             dd => dd.TextContent.Contains("Navy"));
-            Assert.Contains(
-            DetailPage.QuerySelectorAll("dd"),
-            dd => dd.TextContent.Contains("Surface Tablet"));
-            Assert.Contains(
-         DetailPage.QuerySelectorAll("dd"),
-         dd => dd.TextContent.Contains("You Are the First Line of Defence!"));
-
-
-
-        }
-
 
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

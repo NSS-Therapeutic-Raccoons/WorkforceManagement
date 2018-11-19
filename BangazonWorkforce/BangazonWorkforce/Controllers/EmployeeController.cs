@@ -73,7 +73,7 @@ namespace BangazonWorkforce.Controllers
                 return NotFound();
             }
                 Employee employee = await GetById(id.Value);
-                EmployeeDetailModel viewmodel = new EmployeeDetailModel(_config,employee.Id, employee);
+                EmployeeDetailsViewModel viewmodel = new EmployeeDetailsViewModel(_config,employee.Id, employee);
                 if (employee == null)
                 {
                     return NotFound();

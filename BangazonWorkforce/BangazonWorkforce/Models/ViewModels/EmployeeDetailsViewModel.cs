@@ -14,7 +14,7 @@ using Dapper;
 
 namespace BangazonWorkforce.Models
 {
-    public class EmployeeDetailModel
+    public class EmployeeDetailsViewModel
     {
         public Employee Employee { get; set; }
         public Department Department { get; set; }
@@ -22,39 +22,39 @@ namespace BangazonWorkforce.Models
         public List<string> Computers = new List<string>();
         public List<string> ComputerManufacturer = new List<string>();
 
-        public EmployeeDetailModel(IConfiguration config, int Id, Employee employee)
+        public EmployeeDetailsViewModel(IConfiguration config, int Id, Employee employee)
         {
             using (IDbConnection conn = new SqlConnection(config.GetConnectionString("DefaultConnection")))
             {
                 IEnumerable<TrainingProgram> trainingPrograms = conn.Query<TrainingProgram>($@"
-                 SELECT
-				    tp.Name
-                FROM TrainingProgram tp
-                JOIN EmployeeTraining et ON tp.Id = et.TrainingProgramId
-                JOIN Employee e ON e.Id = et.EmployeeId
-			    WHERE e.Id = {Id}    
-                ");
+                        SELECT
+				            tp.Name
+                        FROM TrainingProgram tp
+                        JOIN EmployeeTraining et ON tp.Id = et.TrainingProgramId
+                        JOIN Employee e ON e.Id = et.EmployeeId
+			            WHERE e.Id = {Id}    
+                        ");
                 TrainingPrograms = trainingPrograms.Select(tp => tp.Name).ToList();
                 Employee = employee;
 
                 IEnumerable<Computer> computers = conn.Query<Computer>($@"
-                 SELECT
-				    c.Make
-                FROM Computer c
-                JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
-                JOIN Employee e ON e.Id = ce.EmployeeId
-			    WHERE e.Id = {Id}  
-                ");
+                        SELECT
+				            c.Make
+                        FROM Computer c
+                        JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                        JOIN Employee e ON e.Id = ce.EmployeeId
+			            WHERE e.Id = {Id}  
+                        ");
                 Computers = computers.Select(c => c.Make).ToList();
-                
+
                 IEnumerable<Computer> computermanufacturers = conn.Query<Computer>($@"
-                 SELECT
-                    c.Manufacturer
-                FROM Computer c
-                JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
-                JOIN Employee e ON e.Id = ce.EmployeeId
-			    WHERE e.Id = {Id}  
-                ");
+                        SELECT
+                            c.Manufacturer
+                        FROM Computer c
+                        JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                        JOIN Employee e ON e.Id = ce.EmployeeId
+			            WHERE e.Id = {Id}  
+                        ");
                 ComputerManufacturer = computermanufacturers.Select(c => c.Manufacturer).ToList();
             }
         }

@@ -1,4 +1,4 @@
-﻿@model BangazonWorkforce.Models.EmployeeDetailModel
+﻿@model BangazonWorkforce.Models.EmployeeDetailsViewModel
 @{
     ViewData["Title"] = "Details";
 }
@@ -50,9 +50,13 @@
         <dt>
             @Html.DisplayNameFor(model => model.TrainingPrograms)
         </dt>
-        <dd>
-            @Html.DisplayFor(model => model.TrainingPrograms)
-        </dd>
+
+        @foreach (var item in Model.TrainingPrograms)
+        {
+            <dd>
+                @Html.DisplayFor(modelItem => item)
+            </dd>}
+
         <dd>
             @Html.DisplayFor(model => model.Department.Name)
         </dd>
