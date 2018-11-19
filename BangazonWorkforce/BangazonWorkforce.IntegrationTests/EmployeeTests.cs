@@ -137,7 +137,7 @@ namespace BangazonWorkforce.IntegrationTests
             // Arrange
             Employee employee = (await GetAllEmloyees()).Last();
             Department department = (await GetAllDepartments()).Last();
-            Computer computer = (await GetAllComputers()).Where(c => c.DecomissionDate == null).Last();
+            Computer computer = (await GetAllAvailableComputers()).Last();
             string selectedId = (await GetAllTrainingPrograms()).Select((tp) => tp.Id).ToList().Last().ToString();
 
             string url = $"employee/edit/{employee.Id}";
@@ -272,6 +272,29 @@ namespace BangazonWorkforce.IntegrationTests
             }
         }
 
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get only the active computers not currently assigned to other employees from the database.
+        */
+        private async Task<List<Computer>> GetAllAvailableComputers()
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            {
+                string sql = $@"SELECT	c.Id,
+		                                c.PurchaseDate,
+		                                c.DecomissionDate, 
+		                                c.Make, 
+		                                c.Manufacturer 
+                                FROM Computer c
+                                LEFT JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                                WHERE ce.ComputerId IS NULL
+                                AND c.DecomissionDate IS NULL";
+
+                IEnumerable<Computer> computers = await conn.QueryAsync<Computer>(sql);
+                return computers.ToList();
+            }
+        }
 
         /*
             * Author: Ricky Bruner 
