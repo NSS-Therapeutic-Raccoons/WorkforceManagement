@@ -29,20 +29,29 @@ namespace BangazonWorkforce.Controllers
 
 
         /*
-
-            * Author: Klaus Hardt
-
+            * Author: Klaus Hardt (Ticket #1)
             * Index calls for all Department including the name and budget. 
 
+            * Author: Daniel Figueroa (Ticket #5)
+            * Comment: Index() now calls on view model 'DepartmentIndexViewModel' to display
+            * department name/budget and Employee count for that department.
        */
 
         public async Task<IActionResult> Index()
         {
             using (IDbConnection conn = Connection)
             {
-                string sql = "SELECT Id, Name, Budget FROM Department";
-                IEnumerable<Department> departments = await conn.QueryAsync<Department>(sql);
-
+                Dictionary<int, List<Employee>> report = new Dictionary<int, List<Employee>>();
+                string sql = $@"
+                            SELECT
+                                d.Id,
+                                d.Name,
+                                d.Budget,
+                                COUNT(e.Id) AS EmployeeCount
+                            FROM Department d
+                            LEFT OUTER JOIN Employee e ON d.Id = e.DepartmentId
+                            GROUP BY d.Id, d.Name, d.Budget";
+                IEnumerable<DepartmentIndexViewModel> departments = await conn.QueryAsync<DepartmentIndexViewModel>(sql);
                 return View(departments);
             }
         }
