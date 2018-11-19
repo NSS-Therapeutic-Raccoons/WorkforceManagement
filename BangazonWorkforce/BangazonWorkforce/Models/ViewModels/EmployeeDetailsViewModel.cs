@@ -19,7 +19,7 @@ namespace BangazonWorkforce.Models
         public Employee Employee { get; set; }
         public Department Department { get; set; }
         public List<string> TrainingPrograms = new List<string>();
-        public List<Computer> Computers = new List<Computer>();
+        public List<Computer> Computers { get; set; } = new List<Computer>();
 
         public EmployeeDetailsViewModel(IConfiguration config, int Id, Employee employee)
         {

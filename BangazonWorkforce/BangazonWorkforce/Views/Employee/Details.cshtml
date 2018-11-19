@@ -43,22 +43,39 @@
         <dt>
             @Html.DisplayNameFor(model => model.Computers)
         </dt>
-        @foreach (var item in Model.Computers)
+        @if (Model.Computers.Count == 0)
         {
             <dd>
-                @Html.DisplayFor(modelItem => item.Make):
-                @Html.DisplayFor(modelItem => item.Manufacturer)
+                No Computers Assigned Yet.
             </dd>
+        }
+        else
+        {
+            @foreach (var item in Model.Computers)
+            {
+                <dd>
+                    @Html.DisplayFor(modelItem => item.Make):
+                    @Html.DisplayFor(modelItem => item.Manufacturer)
+                </dd>
+            }
         }
         <dt>
             @Html.DisplayNameFor(model => model.TrainingPrograms)
         </dt>
-
-        @foreach (var item in Model.TrainingPrograms)
+        @if (Model.TrainingPrograms.Count == 0)
         {
             <dd>
-                @Html.DisplayFor(modelItem => item)
+                Not Participating in Any Training Programs.
             </dd>
+        }
+        else
+        {
+            @foreach (var item in Model.TrainingPrograms)
+            {
+                <dd>
+                    @Html.DisplayFor(modelItem => item)
+                </dd>
+            }
         }
     </dl>
 </div>
