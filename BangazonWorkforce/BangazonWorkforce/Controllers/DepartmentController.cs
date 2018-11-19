@@ -59,7 +59,6 @@ namespace BangazonWorkforce.Controllers
         public async Task<ActionResult> Details(int id)
         {
             DepartmentDetailsViewModel Placeholder = new DepartmentDetailsViewModel();
-            Dictionary<int, List<Employee>> report = new Dictionary<int, List<Employee>>();
             string sql = $@"
             SELECT
                 d.Id,
@@ -82,12 +81,10 @@ namespace BangazonWorkforce.Controllers
                 (department, employee) =>
                     {
                         Placeholder.Department = department;
-                        if (!report.ContainsKey(department.Id))
+                        if (employee != null)
                         {
-                            report[department.Id] = new List<Employee>();
+                            Placeholder.AllEmployees.Add(employee);
                         }
-                        //Why do I need the dictionary
-                        Placeholder.AllEmployees.Add(employee);
                         return (department);
                     });
                     return View(Placeholder);
