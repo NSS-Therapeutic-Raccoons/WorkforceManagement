@@ -1,4 +1,3 @@
-
 DELETE FROM OrderProduct;
 DELETE FROM ComputerEmployee;
 DELETE FROM EmployeeTraining;
@@ -454,23 +453,7 @@ VALUES
 INSERT INTO EmployeeTraining
 (EmployeeId, TrainingProgramId)
 VALUES
-('You Are the First Line of Defence!','170425 10:34:09 AM', '180618 10:34:09 AM', 15);
-
-INSERT INTO TrainingProgram
-(Name, StartDate, EndDate, MaxAttendees)
-VALUES
-('Cyber Security','170425 10:34:09 AM', '180618 10:34:09 AM', 15);
-
-Insert into EmployeeTraining
-(EmployeeId,TrainingProgramId)
-Values
-(1,1);
-
-Insert into EmployeeTraining
-(EmployeeId,TrainingProgramId)
-Values
-(1,2);
-
+(1, 3);
 
 INSERT INTO EmployeeTraining
 (EmployeeId, TrainingProgramId)
