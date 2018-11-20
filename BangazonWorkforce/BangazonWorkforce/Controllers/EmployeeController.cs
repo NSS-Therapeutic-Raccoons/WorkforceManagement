@@ -78,14 +78,14 @@ namespace BangazonWorkforce.Controllers
             {
                 return NotFound();
             }
-
-            Employee employee = await GetById(id.Value);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-            return View(employee);
-        }
+                Employee employee = await GetById(id.Value);
+                EmployeeDetailsViewModel viewmodel = new EmployeeDetailsViewModel(_config,employee.Id, employee);
+                if (employee == null)
+                {
+                    return NotFound();
+                }
+                return View(viewmodel); 
+            } 
 
         // GET: Employee/Create
         /*Create makes a list of All the Departments and puts that list of Departments into the ViewModel to be used.*/
@@ -305,7 +305,8 @@ namespace BangazonWorkforce.Controllers
                                        d.Id,
                                        d.Name,
                                        d.Budget
-                                  FROM Employee e JOIN Department d on e.DepartmentId = d.Id
+                                  FROM Employee e 
+                                  JOIN Department d on e.DepartmentId = d.Id
                                  WHERE e.id = {id}";
                 IEnumerable<Employee> employees = await conn.QueryAsync<Employee, Department, Employee>(
                     sql,
