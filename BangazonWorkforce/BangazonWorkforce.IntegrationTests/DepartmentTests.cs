@@ -72,6 +72,44 @@ namespace BangazonWorkforce.IntegrationTests
                 td => td.TextContent.Contains(fullDepartment.EmployeeCount.ToString()));
         }
 
+        /*
+        Author:     Daniel Figueroa
+        Purpose:    Verified that the content from the first department always matches the HTML element on screen.
+        */
+        [Fact]
+        public async Task Get_DepartmentDetailsContentVerified()
+        {
+            // Arrange
+            DepartmentIndexViewModel fullDepartment = (await GetFullDepartment());
+            DepartmentDetailsViewModel singleDepartment = (await GetFullDepartmentDetails(fullDepartment.Id));
+            string url = $"/department/details/{singleDepartment.Department.Id}";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync(url);
+
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            Assert.Equal("text/html; charset=utf-8",
+                response.Content.Headers.ContentType.ToString());
+
+            IHtmlDocument indexPage = await HtmlHelpers.GetDocumentAsync(response);
+
+            Assert.Contains(indexPage.QuerySelectorAll("dd"),
+                dd => dd.TextContent.Contains(singleDepartment.Department.Name));
+            Assert.Contains(indexPage.QuerySelectorAll("dd"),
+                dd => dd.TextContent.Contains(singleDepartment.Department.Budget.ToString()));
+            if (singleDepartment.AllEmployees.Count == 0)
+            {
+                Assert.Contains(indexPage.QuerySelectorAll("li"),
+                li => li.TextContent.Contains("No Employees"));
+            }
+            else
+            {
+                Assert.Contains(indexPage.QuerySelectorAll("li"),
+                li => li.TextContent.Contains(singleDepartment.AllEmployees.First<Employee>().FirstName));
+            }
+        }
+
         [Fact]
         public async Task Post_CreateAddsDepartment()
         {
@@ -132,6 +170,45 @@ namespace BangazonWorkforce.IntegrationTests
                             GROUP BY d.Id, d.Name, d.Budget";
                 var departments = await conn.QueryFirstAsync<DepartmentIndexViewModel>(sql);
                 return departments;
+            }
+        }
+
+        /*
+        Author:     Daniel Figueroa
+        Purpose:    Queries for the first item in Department and Employee table to build DepartmentIndexViewModel to test
+                    against DepartmentIndexContentVerfied
+        */
+        private async Task<DepartmentDetailsViewModel> GetFullDepartmentDetails(int id)
+        {
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
+            {
+                DepartmentDetailsViewModel placeholder = new DepartmentDetailsViewModel();
+                string sql = $@"
+                    SELECT
+                        d.Id,
+                        d.Name,
+                        d.Budget,
+                        e.Id, 
+                        e.FirstName,
+                        e.LastName, 
+                        e.IsSupervisor,
+                        e.DepartmentId
+                    FROM Department d
+                    LEFT OUTER JOIN Employee e ON d.Id = e.DepartmentId
+                    WHERE d.Id = {id}
+                    ";
+                IEnumerable<Department> departments = await conn.QueryAsync<Department, Employee, Department>(
+                sql,
+                (department, employee) =>
+                {
+                    placeholder.Department = department;
+                    if (employee != null)
+                    {
+                        placeholder.AllEmployees.Add(employee);
+                    }
+                    return (department);
+                });
+                return placeholder;
             }
         }
     }
