@@ -18,7 +18,5 @@ namespace BangazonWorkforce.Models
 
         public string Make { get; set; }
 
-
-
     }
 }
