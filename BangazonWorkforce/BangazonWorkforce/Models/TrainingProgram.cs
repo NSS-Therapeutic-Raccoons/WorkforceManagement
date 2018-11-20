@@ -12,7 +12,6 @@ namespace BangazonWorkforce.Models
         public int Id { get; set; }
 
         [Display(Name = "Training Programs")]
-
         public string Name { get; set; }
 
         public DateTime StartDate { get; set; }
