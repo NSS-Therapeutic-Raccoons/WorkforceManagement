@@ -180,7 +180,7 @@ namespace BangazonWorkforce.IntegrationTests
         */
         private async Task<DepartmentDetailsViewModel> GetFullDepartmentDetails(int id)
         {
-            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
             {
                 DepartmentDetailsViewModel placeholder = new DepartmentDetailsViewModel();
                 string sql = $@"
