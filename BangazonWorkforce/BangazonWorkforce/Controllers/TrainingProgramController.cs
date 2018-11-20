@@ -59,23 +59,35 @@ namespace BangazonWorkforce.Controllers
         // GET: TrainingProgram/Create
         public ActionResult Create()
         {
-            return View();
+            TrainingProgramCreateViewModel viewmodel = new TrainingProgramCreateViewModel();
+            
+            return View(viewmodel);
         }
 
         // POST: TrainingProgram/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(TrainingProgramCreateViewModel viewmodel)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
+                return View(viewmodel);
             }
-            catch
+
+
+            TrainingProgram trainingProgram = viewmodel.TrainingProgram;
+
+            using (IDbConnection conn = Connection)
             {
-                return View();
+                string sql = $@"
+                        INSERT INTO TrainingProgram 
+                        ([Name], StartDate, EndDate, MaxAttendees) 
+                        VALUES 
+                        ('{trainingProgram.Name}', '{trainingProgram.StartDate}', '{trainingProgram.EndDate}', '{trainingProgram.MaxAttendees}');
+                    ";
+
+                await conn.ExecuteAsync(sql);
+                return RedirectToAction(nameof(Index));
             }
         }
 
