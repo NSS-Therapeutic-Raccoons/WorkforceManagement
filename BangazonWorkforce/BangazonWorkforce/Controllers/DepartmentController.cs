@@ -136,7 +136,7 @@ namespace BangazonWorkforce.Controllers
             {
                 string sql = $@"UPDATE Department 
                                    SET Name = '{department.Name}', 
-                                       Budget = {department.Id}
+                                       Budget = {department.Budget}
                                  WHERE id = {id}";
 
                 await conn.ExecuteAsync(sql);
@@ -158,6 +158,7 @@ namespace BangazonWorkforce.Controllers
             {
                 return NotFound();
             }
+
             return View(department);
         }
 
@@ -166,15 +167,12 @@ namespace BangazonWorkforce.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            
             using (IDbConnection conn = Connection)
             {
                 string sql = $@"DELETE FROM Department WHERE id = {id}";
-                int rowsDeleted = await conn.ExecuteAsync(sql);
-                
-                if (rowsDeleted > 0)
-                {
-                    return NotFound();
-                }
+
+                await conn.ExecuteAsync(sql);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -191,6 +189,23 @@ namespace BangazonWorkforce.Controllers
 
                 IEnumerable<Department> departments = await conn.QueryAsync<Department>(sql);
                 return departments.SingleOrDefault();
+            }
+        }
+
+        private async Task<List<Employee>> GetDepartmentEmployees(int id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"
+                    SELECT Id,
+                           FirstName,
+                           LastName,
+                           IsSupervisor,
+                           DepartmentId
+                    FROM Employee
+                    WHERE DepartmentId = {id}";
+                List<Employee> employees = (await conn.QueryAsync<Employee>(sql)).ToList();
+                return employees;
             }
         }
     }
