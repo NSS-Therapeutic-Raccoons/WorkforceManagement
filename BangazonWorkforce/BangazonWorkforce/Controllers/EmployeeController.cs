@@ -9,9 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Dapper;
 using BangazonWorkforce.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BangazonWorkforce.Controllers
 {
+
+    /*
+        * Author: Theraputic Raccoons 
+        * Purpose: This controller handles the database queries and data filtering into Views for the Index, Details, Create, Edit, Delete paths.
+    */
     public class EmployeeController : Controller
     {
         private IConfiguration _config;
@@ -72,21 +78,21 @@ namespace BangazonWorkforce.Controllers
             {
                 return NotFound();
             }
-
-            Employee employee = await GetById(id.Value);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-            return View(employee);
-        }
+                Employee employee = await GetById(id.Value);
+                EmployeeDetailsViewModel viewmodel = new EmployeeDetailsViewModel(_config,employee.Id, employee);
+                if (employee == null)
+                {
+                    return NotFound();
+                }
+                return View(viewmodel); 
+            } 
 
         // GET: Employee/Create
         /*Create makes a list of All the Departments and puts that list of Departments into the ViewModel to be used.*/
         public async Task<IActionResult> Create()
         {
             List<Department> allDepartments = await GetAllDepartments();
-            EmployeeAddEditViewModel viewmodel = new EmployeeAddEditViewModel
+            EmployeeAddViewModel viewmodel = new EmployeeAddViewModel
             {
                 AllDepartments = allDepartments
             };
@@ -102,7 +108,7 @@ namespace BangazonWorkforce.Controllers
         // Page redirect back to Index
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(EmployeeAddEditViewModel viewmodel)
+        public async Task<IActionResult> Create(EmployeeAddViewModel viewmodel)
         {
             if (!ModelState.IsValid)
             {
@@ -132,6 +138,10 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To GET all of the neccessary data from the database and render the Edit View to the user. The "computer" logic below accounts for whether or not the specified employee has been assigned a computer.
+        */
         // GET: Employee/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -141,27 +151,48 @@ namespace BangazonWorkforce.Controllers
             }
 
             List<Department> allDepartments = await GetAllDepartments();
+
+            List<Computer> allActiveComputers = await GetAllAvailableComputers();
+
+            List<TrainingProgram> employeeTrainingPrograms = await GetEmployeeTrainingPrograms(id.Value);
+
+            List<TrainingProgram> allTrainingPrograms = await GetAllTrainingPrograms();
+
             Employee employee = await GetById(id.Value);
+
+            Computer computer = await GetEmployeeComputer(id.Value);
+
             if (employee == null)
             {
                 return NotFound();
             }
 
-            EmployeeAddEditViewModel viewmodel = new EmployeeAddEditViewModel
+            EmployeeEditViewModel viewmodel = new EmployeeEditViewModel
             {
                 Employee = employee,
-                AllDepartments = allDepartments
+                AllDepartments = allDepartments,
+                AllComputers = allActiveComputers,
+                EmployeeTrainingPrograms = employeeTrainingPrograms,
+                AllTrainingPrograms = allTrainingPrograms
             };
+            
+            if (computer != null)
+            {
+                viewmodel.Computer = computer;
+            }
 
             return View(viewmodel);
         }
 
+
+        /*
+            * Author: Ricky Bruner 
+            * Purpose: This POST handles all of the data manipulation for receiving the user inputed changes from the user on the Edit View when submit is initiated. It builds various SQL scripts based on what the employee already has assigned, and what the user changes this data to.
+        */
         // POST: Employee/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EmployeeAddEditViewModel viewmodel)
+        public async Task<IActionResult> Edit(int id, EmployeeEditViewModel viewmodel)
         {
             if (id != viewmodel.Employee.Id)
             {
@@ -177,6 +208,12 @@ namespace BangazonWorkforce.Controllers
 
             Employee employee = viewmodel.Employee;
 
+            List<int> employeeTrainingPrograms = viewmodel.SelectedTrainingProgramIds;
+
+            Computer computer = viewmodel.Computer;
+
+            Computer employeeComputer = await GetEmployeeComputer(employee.Id);
+
             using (IDbConnection conn = Connection)
             {
                 string sql = $@"UPDATE Employee 
@@ -184,9 +221,41 @@ namespace BangazonWorkforce.Controllers
                                        LastName = '{employee.LastName}', 
                                        IsSupervisor = {(employee.IsSupervisor ? 1 : 0)},
                                        DepartmentId = {employee.DepartmentId}
-                                 WHERE id = {id}";
+                                 WHERE id = {id};";
+                
+                
+                string computerResetSql = "";
+
+                string computerAddSql = "";
+
+                if (computer.Id != 0 && computer.Id != employeeComputer.Id) 
+                { 
+                
+                    computerResetSql = $@"DELETE FROM ComputerEmployee WHERE EmployeeId = {employee.Id};";
+
+                    computerAddSql = $@"INSERT INTO ComputerEmployee
+                                        (ComputerId, EmployeeId, AssignDate)
+                                        VALUES
+                                        ({ computer.Id }, { employee.Id }, '{DateTime.Now}');";
+                }
+
+                string trainingResetSql = $@"DELETE FROM EmployeeTraining WHERE EmployeeId = {employee.Id};";
+
+                string trainingAddSql = "";
+
+                foreach (int num in employeeTrainingPrograms) 
+                {
+                    trainingAddSql = trainingAddSql + $@"
+                        INSERT INTO EmployeeTraining
+                        (EmployeeId, TrainingProgramId)
+                        VALUES
+                        ({employee.Id}, {num});";
+                }
+
+                sql = sql + computerResetSql + computerAddSql + trainingResetSql + trainingAddSql;
 
                 await conn.ExecuteAsync(sql);
+
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -222,6 +291,8 @@ namespace BangazonWorkforce.Controllers
         }
 
 
+
+        // Private async queries
         private async Task<Employee> GetById(int id)
         {
             using (IDbConnection conn = Connection)
@@ -234,7 +305,8 @@ namespace BangazonWorkforce.Controllers
                                        d.Id,
                                        d.Name,
                                        d.Budget
-                                  FROM Employee e JOIN Department d on e.DepartmentId = d.Id
+                                  FROM Employee e 
+                                  JOIN Department d on e.DepartmentId = d.Id
                                  WHERE e.id = {id}";
                 IEnumerable<Employee> employees = await conn.QueryAsync<Employee, Department, Employee>(
                     sql,
@@ -255,6 +327,121 @@ namespace BangazonWorkforce.Controllers
 
                 IEnumerable<Department> departments = await conn.QueryAsync<Department>(sql);
                 return departments.ToList();
+            }
+        }
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get only the active computers not currently assigned to other employees from the database.
+        */
+        private async Task<List<Computer>> GetAllAvailableComputers()
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"SELECT	c.Id,
+		                                c.PurchaseDate,
+		                                c.DecomissionDate, 
+		                                c.Make, 
+		                                c.Manufacturer 
+                                FROM Computer c
+                                LEFT JOIN ComputerEmployee ce ON c.Id = ce.ComputerId
+                                WHERE ce.ComputerId IS NULL
+                                AND c.DecomissionDate IS NULL";
+
+                IEnumerable<Computer> computers = await conn.QueryAsync<Computer>(sql);
+                return computers.ToList();
+            }
+        }
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get a specific computer from the database.
+        */
+        private async Task<Computer> GetComputerById(int id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"SELECT c.Id, 
+                                       c.PurchaseDate,
+                                       c.DecomissionDate,
+                                       c.Make, 
+                                       c.Manufacturer
+                                FROM Computer c
+                                WHERE c.Id = {id}";
+
+                Computer computer = await conn.QueryFirstAsync<Computer>(sql);
+                return computer;
+            }
+        }
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get the computer currently assigned to an employee from the database.
+        */
+        private async Task<Computer> GetEmployeeComputer(int id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"SELECT  c.Id,
+		                                c.PurchaseDate,
+		                                c.DecomissionDate,
+		                                c.Make, 
+		                                c.Manufacturer
+                                FROM Employee e
+                                LEFT JOIN ComputerEmployee ce ON ce.EmployeeId = e.Id
+                                LEFT JOIN Computer c ON c.Id = ce.ComputerId
+                                WHERE e.Id = {id};";
+
+                Computer computer = await conn.QueryFirstAsync<Computer>(sql);
+                return computer;
+            }
+        }
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get all training programs from the database.
+        */
+        private async Task<List<TrainingProgram>> GetAllTrainingPrograms()
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"
+                            SELECT tp.Id, 
+                                   tp.[Name],
+                                   tp.StartDate,
+                                   tp.EndDate,
+                                   tp.MaxAttendees
+                            FROM TrainingProgram tp
+                            ";
+
+                IEnumerable<TrainingProgram> trainingPrograms = await conn.QueryAsync<TrainingProgram>(sql);
+                return trainingPrograms.ToList();
+            }
+        }
+
+
+        /*
+            * Author: Ricky Bruner
+            * Purpose: To get training programs currently enrolled in for an employee from the database.
+        */
+        private async Task<List<TrainingProgram>> GetEmployeeTrainingPrograms(int id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"
+                            SELECT tp.Id, 
+                                   tp.[Name],
+                                   tp.StartDate,
+                                   tp.EndDate,
+                                   tp.MaxAttendees
+                            FROM TrainingProgram tp
+                            JOIN EmployeeTraining etp ON etp.TrainingProgramId = tp.Id
+                            JOIN Employee e On e.Id = etp.EmployeeId
+                            WHERE e.Id = {id}
+                            ";
+
+                IEnumerable<TrainingProgram> trainingPrograms = await conn.QueryAsync<TrainingProgram>(sql);
+                return trainingPrograms.ToList();
             }
         }
     }

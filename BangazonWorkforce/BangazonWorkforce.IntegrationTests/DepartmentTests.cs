@@ -119,7 +119,7 @@ namespace BangazonWorkforce.IntegrationTests
         */
         private async Task<DepartmentIndexViewModel> GetFullDepartment()
         {
-            using (IDbConnection conn = new SqlConnection(Config.ConnectionSring))
+            using (IDbConnection conn = new SqlConnection(Config.ConnectionString))
             {
                 string sql = $@"
                             SELECT

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BangazonWorkforce.Models
 {
-    public class EmployeeAddEditViewModel
+    public class EmployeeAddViewModel
     {
         public Employee Employee { get; set; }
         public List<Department> AllDepartments { get; set; }

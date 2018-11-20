@@ -48,7 +48,7 @@ A step by step series of examples that tell you how to get a development env run
 ```
  Here is a gif visualizing this process:
 
-![Appsettings Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/readmegifs/appsettingsjson.gif?raw=true)
+![Appsettings Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/master/readmegifs/appsettingsjson.gif?raw=true)
 
 7. Next, open the SQL Server Object Explorer view window. Navigate to the Bangazon server and right click to select **properties**. In the properties window that pops up, find ***Connection String*** and copy the connection string.
 
@@ -66,7 +66,7 @@ A step by step series of examples that tell you how to get a development env run
 
 Here is another handy gif showing this continued process:
 
-![Connection String Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/readmegifs/connectionstring.gif?raw=true)
+![Connection String Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/master/readmegifs/connectionstring.gif?raw=true)
 
 10. Inside of the `BangazonWorkforce.IntegrationTests` project, create a new class file called `Config.cs`. 
 
@@ -91,9 +91,9 @@ namespace BangazonWorkforce.IntegrationTests
 
 Visualized here:
 
-![Config Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/readmegifs/configcs.gif?raw=true)
+![Config Demo](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/master/readmegifs/configcs.gif?raw=true)
 
-13. Be sure to save all files, then load up SQL Server Management Studio. Inside of there, run the SQL script in this repo, [SQL Script](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/rb-readmebuild/BangazonWorkforce/bangazon.sql), then execute the script into the Bangazon database.
+13. Be sure to save all files, then load up SQL Server Management Studio. Inside of there, run the SQL script in this repo, [SQL Script](https://github.com/NSS-Therapeutic-Raccoons/WorkforceManagement/blob/master/BangazonWorkforce/bangazon.sql), then execute the script into the Bangazon database.
 
 14. Verify that the `csproj` file inside of `BangazonWorkforce` looks like this:
 ```cs
