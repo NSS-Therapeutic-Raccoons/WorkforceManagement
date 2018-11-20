@@ -18,6 +18,7 @@ namespace BangazonWorkforce.Models
 
         [Display(Name = "Assigned Computers")]
         public string Make { get; set; }
+       
         public string Manufacturer { get; set; }
 
     }
