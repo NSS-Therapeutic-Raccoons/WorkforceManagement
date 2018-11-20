@@ -32,7 +32,7 @@ namespace BangazonWorkforce.Controllers
             * Author: Klaus Hardt (Ticket #1)
             * Index calls for all Department including the name and budget. 
 
-            * Author: Daniel Figueroa (Ticket #5)
+            * Author: Daniel Figueroa (Ticket #6)
             * Comment: Index() now calls on view model 'DepartmentIndexViewModel' to display
             * department name/budget and Employee count for that department.
        */
@@ -56,9 +56,14 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
+        /*
+        Author:     Daniel Figueroa (Ticket #7)
+        Comment:    Details() calls on view model 'DepartmentDetailsViewModel' to display
+                    department name/budget and list of Employese within that department.
+       */
         public async Task<ActionResult> Details(int id)
         {
-            DepartmentDetailsViewModel Placeholder = new DepartmentDetailsViewModel();
+            DepartmentDetailsViewModel placeholder = new DepartmentDetailsViewModel();
             string sql = $@"
             SELECT
                 d.Id,
@@ -80,49 +85,16 @@ namespace BangazonWorkforce.Controllers
                 sql,
                 (department, employee) =>
                     {
-                        Placeholder.Department = department;
+                        placeholder.Department = department;
                         if (employee != null)
                         {
-                            Placeholder.AllEmployees.Add(employee);
+                            placeholder.AllEmployees.Add(employee);
                         }
                         return (department);
                     });
-                    return View(Placeholder);
+                    return View(placeholder);
             }
         }
-        /*
-        if (_include == "payments")
-                {
-                    Dictionary<int, Customer> report = new Dictionary<int, Customer>();
-
-        IEnumerable<Customer> custAndPay = Connection.Query<Customer, PaymentType, Customer>(
-          $@"
-                    SELECT c.Id,
-                        c.FirstName,
-                        c.LastName,
-                        p.Id,
-                        p.AcctNumber,
-                        p.Name,
-                        p.CustomerId
-                    FROM Customer c
-                    JOIN PaymentType p ON c.Id = p.CustomerId
-                    WHERE c.Id = {id};
-                ",
-                }*/
-    /*public async Task<IActionResult> Details(int? id) 
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        Department department = await GetById(id.Value);
-        if (department == null)
-        {
-            return NotFound();
-        }
-        return View(department);
-    }*/
 
     // GET: Department/Create
     public IActionResult Create()

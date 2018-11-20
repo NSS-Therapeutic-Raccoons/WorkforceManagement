@@ -10,46 +10,41 @@
     <h4>Department</h4>
     <hr />
     <dl class="dl-horizontal">
-        <div class="row">
-            <div class="col-md-6">
-                <dt>
-                    @Html.DisplayNameFor(model => model.Department.Name)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Department.Name)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Department.Budget)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Department.Budget)
-                </dd>
-                <dt>
-                    <label asp-for="AllEmployees" class="control-label"></label>
-                </dt>
-                <dd>
-                    <div>
-                        <ul class="list-group">
-                            @if (Model.AllEmployees.Count == 0)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-right">No Employees</li>
-                            }
-                            else
-                            {
-                                @foreach (var item in Model.AllEmployees)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-right">
-                                        @Html.DisplayFor(model => item.FirstName)
-                                        @Html.DisplayFor(model => item.LastName)
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </div>
-                </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Department.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Department.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Department.Budget)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Department.Budget)
+        </dd>
+        <dt>
+            <label asp-for="AllEmployees" class="control-label"></label>
+        </dt>
+        <dd>
+            <div>
+                <ul class="list-group">
+                    @if (Model.AllEmployees.Count == 0)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-left">No Employees</li>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.AllEmployees)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-left">
+                                @Html.DisplayFor(model => item.FirstName)
+                                @Html.DisplayFor(model => item.LastName)
+                            </li>
+                        }
+                    }
+                </ul>
             </div>
-        </div>
-        
+        </dd>
     </dl>
 </div>
 <div>
