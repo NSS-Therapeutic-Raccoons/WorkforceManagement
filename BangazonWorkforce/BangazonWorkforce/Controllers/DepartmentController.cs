@@ -167,12 +167,21 @@ namespace BangazonWorkforce.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             using (IDbConnection conn = Connection)
+
             {
+                string sql = $@"UPDATE Employee
+                SET DepartmentID = 0 
+                where DepartmentId = {id}";
+
+
+            }
+
+            using (IDbConnection conn = Connection)
+            {
+
+        
                 string sql = $@"DELETE FROM Department WHERE id = {id}";
                 int rowsDeleted = await conn.ExecuteAsync(sql);
-                
-              
-
                 return RedirectToAction(nameof(Index));
             }
         }
