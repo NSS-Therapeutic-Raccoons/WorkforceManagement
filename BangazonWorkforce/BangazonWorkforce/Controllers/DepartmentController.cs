@@ -32,7 +32,7 @@ namespace BangazonWorkforce.Controllers
             * Author: Klaus Hardt (Ticket #1)
             * Index calls for all Department including the name and budget. 
 
-            * Author: Daniel Figueroa (Ticket #5)
+            * Author: Daniel Figueroa (Ticket #6)
             * Comment: Index() now calls on view model 'DepartmentIndexViewModel' to display
             * department name/budget and Employee count for that department.
        */
@@ -56,23 +56,48 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-        public async Task<IActionResult> Details(int? id) 
+        /*
+        Author:     Daniel Figueroa (Ticket #7)
+        Comment:    Details() calls on view model 'DepartmentDetailsViewModel' to display
+                    department name/budget and list of Employese within that department.
+       */
+        public async Task<ActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            DepartmentDetailsViewModel placeholder = new DepartmentDetailsViewModel();
+            string sql = $@"
+            SELECT
+                d.Id,
+                d.Name,
+                d.Budget,
+                e.Id, 
+                e.FirstName,
+                e.LastName, 
+                e.IsSupervisor,
+                e.DepartmentId
+            FROM Department d
+            LEFT OUTER JOIN Employee e ON d.Id = e.DepartmentId
+            WHERE d.Id = {id}
+            ";
 
-            Department department = await GetById(id.Value);
-            if (department == null)
+            using (IDbConnection conn = Connection)
             {
-                return NotFound();
+                IEnumerable<Department> departments = await conn.QueryAsync<Department, Employee, Department>(
+                sql,
+                (department, employee) =>
+                    {
+                        placeholder.Department = department;
+                        if (employee != null)
+                        {
+                            placeholder.AllEmployees.Add(employee);
+                        }
+                        return (department);
+                    });
+                    return View(placeholder);
             }
-            return View(department);
         }
 
-        // GET: Department/Create
-        public IActionResult Create()
+    // GET: Department/Create
+    public IActionResult Create()
         {
             return View();
         }
