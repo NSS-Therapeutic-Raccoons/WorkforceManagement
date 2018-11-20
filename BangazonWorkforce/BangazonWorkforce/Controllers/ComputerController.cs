@@ -117,22 +117,24 @@ namespace BangazonWorkforce.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             
-                using (IDbConnection conn = Connection)
-                {
+            using (IDbConnection conn = Connection)
+            {
 
-                    string sql = $@"DELETE FROM Computer WHERE id = {id}";
-                try {
+                string sql = $@"DELETE FROM Computer WHERE id = {id}";
+                try 
+                {
                     await conn.ExecuteAsync(sql);
 
-                } catch (SqlException e)
+                } 
+                catch (SqlException e)
                 {
                     Console.WriteLine(e);
                     return RedirectToAction(nameof(Index));
-                 };
+                };
                 
                    
-                    return RedirectToAction(nameof(Index));
-                }
+                return RedirectToAction(nameof(Index));
+            }
             
         }
 
