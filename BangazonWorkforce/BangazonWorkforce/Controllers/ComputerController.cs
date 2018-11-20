@@ -1,4 +1,10 @@
-﻿//Computer MVC controller which will have basic CRUD functionality and display on HTML
+﻿/*Computer MVC controller which will have get all, details, create and delete database calls.
+There is no requirement for edit so edit is not included
+The delete requirement will only allow delete with unassigned computers. 
+Assigned computers will throw a foreign key constraint error with computeremployee therefore implemented a try catch to handle
+this. Another option was to find a id match in computeremployee joiner table and if employeeId is not NULL present a message
+however the ticket does not require this. 
+*/
 
 using System;
 using System.Collections.Generic;
@@ -87,56 +93,9 @@ namespace BangazonWorkforce.Controllers
             }
         }
 
-        // GET: Department/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+     
 
-            Computer computer = await GetById(id.Value);
-            if (computer == null)
-            {
-                return NotFound();
-            }
-            return View(computer);
-        }
-
-        // POST: Department/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Computer computer)
-        {
-            if (id != computer.Id)
-            {
-                return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(computer);
-            }
-
-            using (IDbConnection conn = Connection)
-            {
-                string sql = $@"UPDATE Computer 
-                                 SET Purchasedate = {computer.PurchaseDate},
-                                 DecomissionDate = {computer.DecomissionDate},
-                                 Manufacturer = '{computer.Manufacturer}',
-                                 Make = '{computer.Make}'
-                                       
-                                 WHERE id = {id}";
-
-                await conn.ExecuteAsync(sql);
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-
-        // GET: Department/Delete/5
+        // GET: Computer/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,7 +111,7 @@ namespace BangazonWorkforce.Controllers
             return View(computer);
         }
 
-        // POST: Department/Delete/5
+        // POST: Computer/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -170,15 +129,8 @@ namespace BangazonWorkforce.Controllers
                     Console.WriteLine(e);
                     return RedirectToAction(nameof(Index));
                  };
-
-                    /*
-                    if (rowsDeleted > 0)
-                    {
-                        return NotFound();
-                    }
-    */
-                    //find id match in computeremployee and if employeeId not NULL present error msg
-                    //can't delete anyway because get foreign key constraint so used try catch
+                
+                   
                     return RedirectToAction(nameof(Index));
                 }
             

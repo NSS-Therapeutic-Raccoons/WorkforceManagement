@@ -1,7 +1,7 @@
 ﻿
     public static class Config
     {
-        public static string ConnectionSring
+        public static string ConnectionString
         {
             get
             {
