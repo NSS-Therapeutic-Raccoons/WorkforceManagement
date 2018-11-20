@@ -51,10 +51,20 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: TrainingProgram/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
+
+            TrainingProgramDetailsViewModel viewmodel = new TrainingProgramDetailsViewModel();
+
+            viewmodel.TrainingProgram = await GetTrainingProgramById(id);
+            viewmodel.Employees = await GetTrainingProgramEmployees(id);
+            
+            
+        
+            return View(viewmodel);
         }
+
+        
 
         // GET: TrainingProgram/Create
         public ActionResult Create()
@@ -92,25 +102,46 @@ namespace BangazonWorkforce.Controllers
         }
 
         // GET: TrainingProgram/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            TrainingProgramEditViewModel viewmodel = new TrainingProgramEditViewModel {
+                TrainingProgram = await GetTrainingProgramById(id)
+            };
+            return View(viewmodel);
         }
 
         // POST: TrainingProgram/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(int id, TrainingProgramEditViewModel viewmodel)
         {
-            try
+            if (id != viewmodel.TrainingProgram.Id)
             {
-                // TODO: Add update logic here
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                viewmodel.TrainingProgram = await GetTrainingProgramById(id);
+                return View(viewmodel);
+            }
+
+            TrainingProgram tp = viewmodel.TrainingProgram;
+
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"
+                            UPDATE TrainingProgram
+                            SET [Name] = '{tp.Name}',
+                                StartDate = '{tp.StartDate}',
+                                EndDate = '{tp.EndDate}',
+                                MaxAttendees = '{tp.MaxAttendees}'
+                            WHERE Id = {id}
+                            ";
+
+                await conn.ExecuteAsync(sql);
 
                 return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
             }
         }
 
@@ -134,6 +165,47 @@ namespace BangazonWorkforce.Controllers
             catch
             {
                 return View();
+            }
+        }
+
+        private async Task<List<Employee>> GetTrainingProgramEmployees(int id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"
+                            SELECT e.Id, 
+                                   e.FirstName,
+                                   e.LastName,
+                                   e.IsSupervisor,
+                                   e.DepartmentId
+                            FROM Employee e
+                            JOIN EmployeeTraining et ON et.EmployeeId = e.Id
+                            JOIN TrainingProgram tp ON tp.Id = et.TrainingProgramId
+                            WHERE tp.Id = {id}
+                            AND tp.StartDate > '{DateTime.Today}'
+                            ";
+
+                List<Employee> employees = (await conn.QueryAsync<Employee>(sql)).ToList();
+                return employees;
+            }
+        }
+
+        private async Task<TrainingProgram> GetTrainingProgramById(int id)
+        {
+            using (IDbConnection conn = Connection)
+            {
+                string sql = $@"
+                            SELECT tp.Id, 
+                                   tp.[Name],
+                                   tp.StartDate,
+                                   tp.EndDate,
+                                   tp.MaxAttendees
+                            FROM TrainingProgram tp
+                            WHERE tp.Id = {id}
+                            ";
+
+                TrainingProgram trainingProgram = await conn.QueryFirstAsync<TrainingProgram>(sql);
+                return trainingProgram;
             }
         }
     }
