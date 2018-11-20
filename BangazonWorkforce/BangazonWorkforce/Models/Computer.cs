@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿//view for computer including datetime to correspond with database type
+
+using System;
+
 
 namespace BangazonWorkforce.Models
 {
@@ -15,11 +14,9 @@ namespace BangazonWorkforce.Models
 
         public DateTime? DecomissionDate { get; set; }
 
-
-        [Display(Name = "Assigned Computers")]
-        public string Make { get; set; }
-       
         public string Manufacturer { get; set; }
+
+        public string Make { get; set; }
 
     }
 }

@@ -194,7 +194,19 @@ namespace BangazonWorkforce.Controllers
         {
             
             using (IDbConnection conn = Connection)
+
             {
+                string sql = $@"UPDATE Employee
+                SET DepartmentID = 0 
+                where DepartmentId = {id}";
+
+
+            }
+
+            using (IDbConnection conn = Connection)
+            {
+
+        
                 string sql = $@"DELETE FROM Department WHERE id = {id}";
 
                 await conn.ExecuteAsync(sql);
